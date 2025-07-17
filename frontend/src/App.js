@@ -11,6 +11,7 @@ import Alerts from './pages/Alerts';
 import Marketplace from './pages/Marketplace';
 import Expenses from './pages/Expenses';
 import Profile from './pages/Profile';
+import './i18n/i18n';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Container,
   Paper,
@@ -23,6 +24,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
+  const { t } = useTranslation();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -105,7 +107,7 @@ const Login = () => {
               textAlign: 'center',
             }}
           >
-            Welcome Back
+            {t('auth.welcomeBack')}
           </Typography>
           
           <Typography 
@@ -118,7 +120,7 @@ const Login = () => {
               fontSize: '1.1rem',
             }}
           >
-            Sign in to your Community Hub account
+            {t('auth.signInToAccount')}
           </Typography>
 
           {error && (
@@ -143,11 +145,11 @@ const Login = () => {
               required
               fullWidth
               id="username"
-              label="Username"
+              label={t('auth.username')}
               name="username"
               autoComplete="username"
               autoFocus
-              {...register('username', { required: 'Username is required' })}
+              {...register('username', { required: t('auth.usernameRequired') })}
               error={!!errors.username}
               helperText={errors.username?.message}
               InputProps={{
@@ -165,11 +167,11 @@ const Login = () => {
               required
               fullWidth
               name="password"
-              label="Password"
+              label={t('auth.password')}
               type={showPassword ? 'text' : 'password'}
               id="password"
               autoComplete="current-password"
-              {...register('password', { required: 'Password is required' })}
+              {...register('password', { required: t('auth.passwordRequired') })}
               error={!!errors.password}
               helperText={errors.password?.message}
               InputProps={{
@@ -218,12 +220,12 @@ const Login = () => {
                 },
               }}
             >
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? t('auth.signingIn') : t('common.login')}
             </Button>
             
             <Box sx={{ textAlign: 'center', mt: 3 }}>
               <Typography variant="body2" color="text.secondary">
-                Don't have an account?{' '}
+                {t('auth.dontHaveAccount')}{' '}
                 <Link
                   component="button"
                   variant="body2"
@@ -240,7 +242,7 @@ const Login = () => {
                     },
                   }}
                 >
-                  Sign up now
+                  {t('auth.signUpNow')}
                 </Link>
               </Typography>
             </Box>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   AppBar,
   Toolbar,
@@ -24,19 +25,21 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import LanguageSelector from './LanguageSelector';
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const menuItems = [
-    { label: 'Dashboard', path: '/dashboard', icon: <Dashboard /> },
-    { label: 'Ideas', path: '/ideas', icon: <Lightbulb /> },
-    { label: 'Alerts', path: '/alerts', icon: <Warning /> },
-    { label: 'Marketplace', path: '/marketplace', icon: <Store /> },
-    { label: 'Expenses', path: '/expenses', icon: <AccountBalance /> },
+    { label: t('navbar.dashboard'), path: '/dashboard', icon: <Dashboard /> },
+    { label: t('navbar.ideas'), path: '/ideas', icon: <Lightbulb /> },
+    { label: t('navbar.alerts'), path: '/alerts', icon: <Warning /> },
+    { label: t('navbar.marketplace'), path: '/marketplace', icon: <Store /> },
+    { label: t('navbar.expenses'), path: '/expenses', icon: <AccountBalance /> },
   ];
 
   const handleMenuOpen = (event) => {
@@ -97,7 +100,7 @@ const Navbar = () => {
               fontSize: '1.25rem',
             }}
           >
-            Community Hub
+            {t('navbar.communityHub')}
           </Typography>
         </Box>
         
@@ -131,7 +134,9 @@ const Navbar = () => {
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Tooltip title="Notifications">
+          <LanguageSelector />
+          
+          <Tooltip title={t('navbar.notifications')}>
             <IconButton
               size="medium"
               color="inherit"
@@ -149,7 +154,7 @@ const Navbar = () => {
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Profile">
+          <Tooltip title={t('common.profile')}>
             <IconButton
               size="medium"
               edge="end"
@@ -205,7 +210,7 @@ const Navbar = () => {
         >
           <Box sx={{ px: 2, py: 1, borderBottom: '1px solid rgb(226 232 240)' }}>
             <Typography variant="body2" color="text.secondary">
-              Signed in as
+              {t('navbar.signedInAs')}
             </Typography>
             <Typography variant="body1" fontWeight={600}>
               {user?.full_name || user?.username}
@@ -222,7 +227,7 @@ const Navbar = () => {
             }}
           >
             <AccountCircle sx={{ mr: 2, color: '#64748b' }} />
-            Profile Settings
+            {t('navbar.profileSettings')}
           </MenuItem>
           <MenuItem 
             onClick={handleLogout}
@@ -236,7 +241,7 @@ const Navbar = () => {
             }}
           >
             <Logout sx={{ mr: 2 }} />
-            Sign Out
+            {t('common.logout')}
           </MenuItem>
         </Menu>
       </Toolbar>

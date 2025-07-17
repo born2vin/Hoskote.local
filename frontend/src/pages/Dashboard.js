@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Container,
   Grid,
@@ -30,6 +31,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { ideasApi, alertsApi, marketplaceApi, expensesApi } from '../services/api';
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -40,29 +42,29 @@ const Dashboard = () => {
 
   const quickActions = [
     {
-      title: 'Share an Idea',
-      description: 'Propose something new for our community',
+      title: t('dashboard.shareIdea.title'),
+      description: t('dashboard.shareIdea.description'),
       icon: <Lightbulb />,
       gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
       action: () => navigate('/ideas'),
     },
     {
-      title: 'Report Alert',
-      description: 'Keep everyone safe and informed',
+      title: t('dashboard.reportAlert.title'),
+      description: t('dashboard.reportAlert.description'),
       icon: <Warning />,
       gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
       action: () => navigate('/alerts'),
     },
     {
-      title: 'Browse Items',
-      description: 'Find what you need from neighbors',
+      title: t('dashboard.browseItems.title'),
+      description: t('dashboard.browseItems.description'),
       icon: <Store />,
       gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
       action: () => navigate('/marketplace'),
     },
     {
-      title: 'Split Expenses',
-      description: 'Share costs with your community',
+      title: t('dashboard.splitExpenses.title'),
+      description: t('dashboard.splitExpenses.description'),
       icon: <AccountBalance />,
       gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
       action: () => navigate('/expenses'),
@@ -118,7 +120,7 @@ const Dashboard = () => {
               textShadow: '0 2px 4px rgba(0,0,0,0.1)',
             }}
           >
-            Welcome back, {user?.full_name?.split(' ')[0] || user?.username}! 👋
+            {t('dashboard.welcomeBack', { name: user?.full_name?.split(' ')[0] || user?.username })}
           </Typography>
           <Typography 
             variant="h6" 
@@ -127,7 +129,7 @@ const Dashboard = () => {
               fontWeight: 400,
             }}
           >
-            Here's what's happening in your community today
+            {t('dashboard.happeningToday')}
           </Typography>
         </Box>
 
@@ -200,7 +202,7 @@ const Dashboard = () => {
                 mb: 3,
               }}
             >
-              Quick Actions
+              {t('dashboard.quickActions')}
             </Typography>
           </Grid>
           {quickActions.map((action, index) => (
