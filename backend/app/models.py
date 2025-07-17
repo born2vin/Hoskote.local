@@ -29,7 +29,7 @@ class User(Base):
     # Relationships
     ideas = relationship("Idea", back_populates="author")
     alerts = relationship("Alert", back_populates="author")
-    marketplace_items = relationship("MarketplaceItem", back_populates="owner")
+    marketplace_items = relationship("MarketplaceItem",back_populates="seller", foreign_keys="[MarketplaceItem.seller_id]")
     created_expenses = relationship("Expense", back_populates="created_by")
     participated_expenses = relationship("Expense", secondary=expense_participants, back_populates="participants")
 
@@ -71,8 +71,9 @@ class Alert(Base):
 
 class MarketplaceItem(Base):
     __tablename__ = "marketplace_items"
-    
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
+    seller_id = Column(Integer, ForeignKey("users.id"))
+    buyer_id = Column(Integer, ForeignKey("users.id"))
     title = Column(String(200), nullable=False)
     description = Column(Text, nullable=False)
     category = Column(String(50), nullable=False)  # electronics, books, tools, furniture, etc.
@@ -87,9 +88,8 @@ class MarketplaceItem(Base):
     return_by = Column(DateTime)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    # Relationships
-    owner = relationship("User", back_populates="marketplace_items", foreign_keys=[owner_id])
+    seller = relationship("User", foreign_keys=[seller_id], back_populates="marketplace_items")
+    buyer = relationship("User", foreign_keys=[buyer_id])
 
 class Expense(Base):
     __tablename__ = "expenses"

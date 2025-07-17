@@ -20,9 +20,9 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#6366f1', // Modern indigo
-      light: '#818cf8',
-      dark: '#4f46e5',
+      main: '#244855', // Modern indigo
+      light: '#90AEAD',
+      dark: '#162C34',
       contrastText: '#ffffff',
     },
     secondary: {
@@ -36,7 +36,7 @@ const theme = createTheme({
       paper: '#ffffff',
     },
     text: {
-      primary: '#1e293b',
+      primary: '#64748b',
       secondary: '#64748b',
     },
     success: {
@@ -142,7 +142,7 @@ const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #244855 0%, #406D7E 100%)',
           minHeight: '100vh',
         },
       },
@@ -177,9 +177,9 @@ const theme = createTheme({
           },
         },
         contained: {
-          background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+          background: 'linear-gradient(135deg,rgb(96, 166, 192) 0%,rgb(172, 228, 248) 100%)',
           '&:hover': {
-            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+            background: 'linear-gradient(135deg,rgb(108, 183, 211) 0%,rgb(177, 220, 236) 100%)',
           },
         },
       },
@@ -189,7 +189,7 @@ const theme = createTheme({
         root: {
           '& .MuiOutlinedInput-root': {
             borderRadius: 12,
-            backgroundColor: '#fff',
+            backgroundColor: '#ffffff',
             transition: 'all 0.2s ease-in-out',
             '&:hover': {
               transform: 'translateY(-1px)',

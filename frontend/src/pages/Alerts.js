@@ -118,25 +118,75 @@ const Alerts = () => {
   };
 
   return (
+  <Box sx={{ 
+      background: 'transparent',
+      minHeight: 'calc(100vh - 80px)',
+      py: 3,
+    }}>
     <Container maxWidth="lg">
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-        <Typography variant="h4">Safety Alerts</Typography>
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
+      <Box>
+      <Typography 
+              variant="h3" 
+              sx={{ 
+                fontWeight: 700,
+                color: 'white',
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                mb: 1,
+              }}
+            > 🚨 Safety Alerts</Typography>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                color: 'rgba(255, 255, 255, 0.9)',
+                fontWeight: 400,
+              }}
+            >
+              Alert everyone to protect the community
+            </Typography>
+            </Box>
         <Button
-          variant="contained"
-          startIcon={<Add />}
-          onClick={() => setOpen(true)}
-          color="error"
-        >
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => setOpen(true)}
+            sx={{
+              background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+              borderRadius: 3,
+              px: 3,
+              py: 1.5,
+              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+              },
+            }}
+          >
           Report Alert
         </Button>
       </Box>
-
-      <Tabs value={tab} onChange={(e, newValue) => setTab(newValue)} sx={{ mb: 3 }}>
+      <Box sx={{ 
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          borderRadius: 3,
+          mb: 3,
+        }}>
+      <Tabs 
+            value={tab} 
+            onChange={(e, newValue) => setTab(newValue)} 
+            sx={{ 
+              px: 2,
+              '& .MuiTab-root': {
+                fontWeight: 600,
+                fontSize: '0.95rem',
+              },
+            }}>
         <Tab label="All Alerts" />
         <Tab label="Active" />
         <Tab label="Resolved" />
         <Tab label="My Alerts" />
-      </Tabs>
+      </Tabs></Box>
 
       <Grid container spacing={3}>
         {isLoading ? (
@@ -310,17 +360,25 @@ const Alerts = () => {
           <DialogActions>
             <Button onClick={() => setOpen(false)}>Cancel</Button>
             <Button 
-              type="submit" 
-              variant="contained"
-              disabled={createMutation.isLoading}
-              color="error"
-            >
+                type="submit" 
+                variant="contained"
+                disabled={createMutation.isLoading}
+                sx={{
+                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                  borderRadius: 2,
+                  px: 3,
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                  },
+                }}
+              >
               {createMutation.isLoading ? 'Reporting...' : 'Report Alert'}
             </Button>
           </DialogActions>
         </form>
       </Dialog>
     </Container>
+    </Box>
   );
 };
 

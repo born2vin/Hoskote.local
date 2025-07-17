@@ -24,7 +24,7 @@ function ProtectedRoute({ children }) {
           justifyContent: 'center', 
           alignItems: 'center', 
           height: '100vh',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #244855 0%, #90aead 100%)',
         }}
       >
         <Box className="loading-spinner" sx={{ 
@@ -49,7 +49,7 @@ function AppContent() {
       display: 'flex', 
       flexDirection: 'column', 
       minHeight: '100vh',
-      background: user ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'transparent',
+      background: user ? 'linear-gradient(135deg, #244855 0%, #90aead 100%)' : 'transparent',
     }}>
       {user && <Navbar />}
       <Box 
