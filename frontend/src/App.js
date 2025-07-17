@@ -16,7 +16,25 @@ function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        }}
+      >
+        <Box className="loading-spinner" sx={{ 
+          width: 40, 
+          height: 40, 
+          border: '4px solid rgba(255,255,255,0.3)',
+          borderTop: '4px solid white',
+          borderRadius: '50%',
+        }} />
+      </Box>
+    );
   }
   
   return user ? children : <Navigate to="/login" />;
@@ -26,9 +44,20 @@ function AppContent() {
   const { user } = useAuth();
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh',
+      background: user ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'transparent',
+    }}>
       {user && <Navbar />}
-      <Box component="main" sx={{ flexGrow: 1, p: user ? 3 : 0 }}>
+      <Box 
+        component="main" 
+        sx={{ 
+          flexGrow: 1,
+          overflow: 'hidden',
+        }}
+      >
         <Routes>
           <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
           <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
