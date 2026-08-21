@@ -23,6 +23,7 @@ class User(Base):
     hashed_password = Column(String(100), nullable=False)
     phone = Column(String(20))
     address = Column(Text)
+    villa_number = Column(String(20))
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
@@ -124,4 +125,22 @@ class ExpenseSplit(Base):
     
     # Relationships
     expense = relationship("Expense", back_populates="splits")
+    user = relationship("User")
+
+class MaintenancePayment(Base):
+    __tablename__ = "maintenance_payments"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    username = Column(String(50), nullable=False)
+    villa_number = Column(String(20), nullable=False)
+    amount = Column(Float, nullable=False)
+    payment_date = Column(DateTime, nullable=False)
+    receipt_url = Column(String(500))
+    notes = Column(Text)
+    status = Column(String(20), default="PENDING_VERIFICATION")
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
     user = relationship("User")

@@ -33,7 +33,7 @@ import {
   AttachMoney,
   Payment,
 } from '@mui/icons-material';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { expensesApi, usersApi } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -381,27 +381,33 @@ const Expenses = () => {
                   sx={{ mb: 2 }}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                  <InputLabel>Participants</InputLabel>
-                  <Select
-                    label="Participants"
-                    multiple
-                    {...register('participant_ids')}
-                    renderValue={(selected) => 
-                      selected.map(id => 
-                        users?.data?.find(u => u.id === id)?.full_name || 'Unknown'
-                      ).join(', ')
-                    }
-                  >
-                    {users?.data?.map((user) => (
-                      <MenuItem key={user.id} value={user.id}>
-                        {user.full_name || user.username}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+               <Grid item xs={12}>
+                 <FormControl fullWidth sx={{ mb: 2 }}>
+                   <InputLabel>Participants</InputLabel>
+                   <Controller
+                     name="participant_ids"
+                     control={control}
+                     render={({ field }) => (
+                       <Select
+                         label="Participants"
+                         multiple
+                         {...field}
+                         renderValue={(selected) => 
+                           selected.map(id => 
+                             users?.data?.find(u => u.id === id)?.full_name || 'Unknown'
+                           ).join(', ')
+                         }
+                       >
+                         {users?.data?.map((user) => (
+                           <MenuItem key={user.id} value={user.id}>
+                             {user.full_name || user.username}
+                           </MenuItem>
+                         ))}
+                       </Select>
+                     )}
+                   />
+                 </FormControl>
+               </Grid>
             </Grid>
           </DialogContent>
           <DialogActions>

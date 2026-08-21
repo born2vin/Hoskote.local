@@ -10,6 +10,7 @@ import Ideas from './pages/Ideas';
 import Alerts from './pages/Alerts';
 import Marketplace from './pages/Marketplace';
 import Expenses from './pages/Expenses';
+import MaintenancePayments from './pages/MaintenancePayments';
 import Profile from './pages/Profile';
 import './i18n/i18n';
 
@@ -67,6 +68,7 @@ function AppContent() {
           <Route path="/alerts" element={<ProtectedRoute><Alerts /></ProtectedRoute>} />
           <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
           <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
+          <Route path="/maintenance" element={<ProtectedRoute><MaintenancePayments /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
         </Routes>

@@ -59,3 +59,13 @@ export const usersApi = {
   getById: (id) => api.get(`/api/users/${id}`),
   updateProfile: (data) => api.put('/api/users/me', data),
 };
+
+// Maintenance Payments API
+export const maintenanceApi = {
+  getAll: (params = {}) => api.get('/api/maintenance/', { params }),
+  getById: (id) => api.get(`/api/maintenance/${id}`),
+  create: (formData) => api.post('/api/maintenance/', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  update: (id, data) => api.put(`/api/maintenance/${id}`, data),
+};

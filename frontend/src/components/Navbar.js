@@ -22,6 +22,7 @@ import {
   AccountCircle,
   Logout,
   Notifications,
+  Payment,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -40,6 +41,7 @@ const Navbar = () => {
     { label: t('navbar.alerts'), path: '/alerts', icon: <Warning /> },
     { label: t('navbar.marketplace'), path: '/marketplace', icon: <Store /> },
     { label: t('navbar.expenses'), path: '/expenses', icon: <AccountBalance /> },
+    { label: t('navbar.maintenance'), path: '/maintenance', icon: <Payment /> },
   ];
 
   const handleMenuOpen = (event) => {

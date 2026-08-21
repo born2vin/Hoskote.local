@@ -183,3 +183,29 @@ class Expense(ExpenseBase):
     
     class Config:
         from_attributes = True
+
+# Maintenance Payment schemas
+class MaintenancePaymentBase(BaseModel):
+    villa_number: str
+    amount: float
+    payment_date: datetime
+    notes: Optional[str] = None
+
+class MaintenancePaymentCreate(MaintenancePaymentBase):
+    pass
+
+class MaintenancePaymentUpdate(BaseModel):
+    status: Optional[str] = None
+    notes: Optional[str] = None
+
+class MaintenancePayment(MaintenancePaymentBase):
+    id: int
+    user_id: int
+    username: str
+    receipt_url: Optional[str] = None
+    status: str
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True

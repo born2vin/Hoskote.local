@@ -35,7 +35,7 @@ if [ ! -d "venv" ]; then
 fi
 
 # Activate virtual environment
-source venv/bin/activate
+source venv\Scripts\activate
 
 # Install Python dependencies
 echo "📦 Installing Python dependencies..."

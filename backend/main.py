@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
 
-from app.routers import auth, ideas, alerts, marketplace, expenses, users
+from app.routers import auth, ideas, alerts, marketplace, expenses, users, maintenance
 from app.database import engine
 from app.models import Base
 
@@ -36,6 +36,7 @@ app.include_router(ideas.router, prefix="/api/ideas", tags=["ideas"])
 app.include_router(alerts.router, prefix="/api/alerts", tags=["alerts"])
 app.include_router(marketplace.router, prefix="/api/marketplace", tags=["marketplace"])
 app.include_router(expenses.router, prefix="/api/expenses", tags=["expenses"])
+app.include_router(maintenance.router, prefix="/api/maintenance", tags=["maintenance"])
 
 @app.get("/")
 async def root():
