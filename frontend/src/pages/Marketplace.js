@@ -167,9 +167,30 @@ const Marketplace = () => {
   };
 
   return (
+    <Box sx={{ 
+      background: 'transparent',
+      minHeight: 'calc(100vh - 80px)',
+      py: 3,
+    }}>
     <Container maxWidth="lg">
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-        <Typography variant="h4">Community Marketplace</Typography>
+         <box><Typography 
+                      variant="h3" 
+                      sx={{ 
+                        fontWeight: 700,
+                        color: 'white',
+                        textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                        mb: 1,
+                      }}
+                    >🏬 Community Marketplace</Typography><Typography 
+                                  variant="h8" 
+                                  sx={{ 
+                                    color: 'rgba(255, 255, 255, 0.9)',
+                                    fontWeight: 400,
+                                  }}
+                                >
+                                  Share items with your neighbors or find something you need. Browse, lend, and borrow items within your community.
+                                </Typography></box>
         <Button
           variant="contained"
           startIcon={<Add />}
@@ -178,12 +199,27 @@ const Marketplace = () => {
           Add Item
         </Button>
       </Box>
-
-      <Tabs value={tab} onChange={(e, newValue) => setTab(newValue)} sx={{ mb: 3 }}>
+      <Box sx={{ 
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          borderRadius: 3,
+          mb: 3,
+        }}>
+        <Tabs value={tab} 
+            onChange={(e, newValue) => setTab(newValue)} 
+            sx={{ 
+              px: 2,
+              '& .MuiTab-root': {
+                fontWeight: 600,
+                fontSize: '0.95rem',
+              },
+            }}>
         <Tab label="Browse Items" />
         <Tab label="My Items" />
         <Tab label="Borrowed Items" />
-      </Tabs>
+      </Tabs></Box>
+
 
       <Grid container spacing={3}>
         {isLoading ? (
@@ -455,6 +491,7 @@ const Marketplace = () => {
         </form>
       </Dialog>
     </Container>
+    </Box>
   );
 };
 

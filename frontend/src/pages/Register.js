@@ -77,7 +77,7 @@ const Register = () => {
           }}
         >
           <Typography component="h1" variant="h4" gutterBottom>
-            Join Community Hub
+            Join Supra Enclave Community Hub
           </Typography>
           <Typography variant="body1" color="text.secondary" gutterBottom>
             Create your account to get started

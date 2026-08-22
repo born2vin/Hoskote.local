@@ -11,8 +11,8 @@ from app.models import Base
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="Community App API",
-    description="A community platform for ideas, safety, marketplace, and expense sharing",
+    title="Supra Enclave Community App API",
+    description="A platform for ideas, safety, marketplace, and expense sharing",
     version="1.0.0"
 )
 
@@ -40,7 +40,7 @@ app.include_router(maintenance.router, prefix="/api/maintenance", tags=["mainten
 
 @app.get("/")
 async def root():
-    return {"message": "Community App API is running!"}
+    return {"message": "Supra Enclave Community App API is running!"}
 
 if __name__ == "__main__":
     import uvicorn
