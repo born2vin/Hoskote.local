@@ -22,7 +22,7 @@ import {
   AccountCircle,
   Logout,
   Notifications,
-  Payment,
+  Construction,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -35,14 +35,19 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
 
+  const isAdmin = user?.role === 'Admin' || user?.role === 'Delegated Admin';
+
   const menuItems = [
     { label: t('navbar.dashboard'), path: '/dashboard', icon: <Dashboard /> },
     { label: t('navbar.ideas'), path: '/ideas', icon: <Lightbulb /> },
     { label: t('navbar.alerts'), path: '/alerts', icon: <Warning /> },
+    { label: t('navbar.issues'), path: '/issues', icon: <Construction /> },
     { label: t('navbar.marketplace'), path: '/marketplace', icon: <Store /> },
-    { label: t('navbar.expenses'), path: '/expenses', icon: <AccountBalance /> },
-    { label: t('navbar.maintenance'), path: '/maintenance', icon: <Payment /> },
   ];
+
+  if (isAdmin) {
+    menuItems.push({ label: t('navbar.budgeting'), path: '/budgeting', icon: <AccountBalance /> });
+  }
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -216,6 +221,9 @@ const Navbar = () => {
             </Typography>
             <Typography variant="body1" fontWeight={600}>
               {user?.full_name || user?.username}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {user?.role}
             </Typography>
           </Box>
           <MenuItem 

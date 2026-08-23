@@ -40,9 +40,9 @@
     "dashboard": "డ్యాష్‌బోర్డ్",
     "ideas": "ఆలోచనలు",
     "alerts": "హెచ్చరికలు",
+    "issues": "సమస్యలు",
     "marketplace": "మార్కెట్‌ప్లేస్",
-    "expenses": "ఖర్చులు",
-    "maintenance": "నిర్వహణ",
+    "budgeting": "బజెట్",
     "notifications": "నోటిఫికేషన్‌లు",
     "profileSettings": "ప్రొఫైల్ సెట్టింగ్‌లు",
     "signedInAs": "ఇలా సైన్ ఇన్ అయ్యారు"
@@ -103,7 +103,10 @@
     "latestIdeas": "💡 తాజా ఆలోచనలు",
     "safetyUpdates": "🚨 భద్రతా అప్‌డేట్‌లు",
     "viewAllIdeas": "అన్ని ఆలోచనలను వీక్షించండి",
-    "viewAllAlerts": "అన్ని హెచ్చరికలను వీక్షించండి"
+    "viewAllAlerts": "అన్ని హెచ్చరికలను వీక్షించండి",
+    "totalIncome": "మొత్తం ఆదాయం",
+    "totalExpenses": "మొత్తం ఖర్చులు",
+    "netBalance": "నికుంక ఉల్లావ"
   },
   "ideas": {
     "title": "💡 కమ్యూనిటీ ఆలోచనలు",
@@ -283,9 +286,72 @@
       "Other": "ఇతర"
     },
     "status": {
-      "pending": "పెండింగ్‌లో ఉంది",
-      "settled": "సెటిల్ చేయబడింది",
-      "cancelled": "రద్దు చేయబడింది"
+      "active": "క్రియాశీలం",
+      "resolved": "పరిష్కరించబడింది",
+      "false_alarm": "తప్పుడు హెచ్చరిక"
+    }
+  },
+  "issues": {
+    "title": "కమ్యూనిటీ సమస్యలు",
+    "reportIssue": "సమస్యను నివేదించండి",
+    "allIssues": "అన్ని సమస్యలు",
+    "open": "తెరుచుకున్నది",
+    "inProgress": "పురోగతిలో ఉంది",
+    "resolved": "పరిష్కరించబడింది",
+    "myIssues": "నా సమస్యలు",
+    "loadingIssues": "సమస్యలను లోడ్ చేస్తోంది...",
+    "reportAnIssue": "సమస్యను నివేదించండి",
+    "title_field": "శీర్షిక",
+    "description": "వివరణ",
+    "category": "వర్గం",
+    "reporting": "నివేదిస్తోంది...",
+    "titleRequired": "శీర్షిక అవసరం",
+    "descriptionRequired": "వివరణ అవసరం",
+    "categoryRequired": "వర్గం అవసరం",
+    "categories": {
+      "Garbage Collection": "చెత్త సేకరణ",
+      "Electricity": "విద్యుత్",
+      "Gardening": "తోటగారిక",
+      "STP Cleaning": "STP శుద్ధి",
+      "Water Supply": "నీటి సరఫరా",
+      "General": "సాధారణ"
+    },
+    "status": {
+      "Open": "తెరుచుకున్నది",
+      "In Progress": "పురోగతిలో ఉంది",
+      "Resolved": "పరిష్కరించబడింది"
+    }
+  },
+  "budgeting": {
+    "title": "బజెట్",
+    "addTransaction": "లావాదేవీ జోడించండి",
+    "allTransactions": "అన్ని లావాదేవీలు",
+    "income": "ఆదాయం",
+    "expenses": "ఖర్చులు",
+    "amount": "మొత్తం",
+    "type": "రకం",
+    "description": "వివరణ",
+    "adding": "జోడిస్తోంది...",
+    "updating": "అప్‌డేట్ చేస్తోంది...",
+    "titleRequired": "శీర్షిక అవసరం",
+    "amountRequired": "మొత్తం అవసరం",
+    "categoryRequired": "వర్గం అవసరం",
+    "amountMustBePositive": "మొత్తం 0 కంటే ఎక్కువగా ఉండాలి",
+    "categories": {
+      "Maintenance": "నిర్వహణ",
+      "Donation": "దాణం",
+      "Event": "ఈవెంట్",
+      "Utilities": "సౌకర్యాలు",
+      "Cleaning": "శుద్ధి",
+      "Security": "భద్రత",
+      "Landscaping": "ల్యాండ్‌స్కేపింగ్",
+      "Repairs": "మరమ్మతులు",
+      "Supplies": "సామగ్రి",
+      "Other": "ఇతర"
+    },
+    "types": {
+      "Income": "ఆదాయం",
+      "Expense": "ఖర్చు"
     }
   },
   "profile": {

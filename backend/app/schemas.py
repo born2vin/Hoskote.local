@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, validator, model_validator
 from datetime import datetime
 from typing import Optional, List
 from enum import Enum
@@ -10,6 +10,7 @@ class UserBase(BaseModel):
     full_name: str
     phone: Optional[str] = None
     address: Optional[str] = None
+    role: Optional[str] = "Resident"
 
 class UserCreate(UserBase):
     password: str
@@ -18,6 +19,7 @@ class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     phone: Optional[str] = None
     address: Optional[str] = None
+    role: Optional[str] = None
 
 class User(UserBase):
     id: int
@@ -206,6 +208,76 @@ class MaintenancePayment(MaintenancePaymentBase):
     status: str
     created_at: datetime
     updated_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+# Issue schemas
+class IssueBase(BaseModel):
+    title: str
+    category: str
+    description: str
+    status: str = "Open"
+
+class IssueCreate(IssueBase):
+    pass
+
+class IssueUpdate(BaseModel):
+    title: Optional[str] = None
+    category: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
+
+class Issue(IssueBase):
+    id: int
+    author_id: int
+    author: User
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+# Budget Transaction schemas
+class BudgetTransactionBase(BaseModel):
+    transaction_type: str
+    category: str
+    amount: float
+    description: Optional[str] = None
+    villa_number: Optional[str] = None
+    resident_name: Optional[str] = None
+    transaction_date: Optional[datetime] = None
+
+    @model_validator(mode="after")
+    def validate_transaction_fields(self):
+        if self.transaction_type == "Income":
+            if not self.villa_number:
+                raise ValueError("villa_number is required for income (maintenance) transactions")
+            if not self.resident_name:
+                raise ValueError("resident_name is required for income (maintenance) transactions")
+        elif self.transaction_type == "Expense":
+            # Expense transactions ignore villa_number and resident_name
+            self.villa_number = None
+            self.resident_name = None
+        return self
+
+class BudgetTransactionCreate(BudgetTransactionBase):
+    pass
+
+class BudgetTransactionUpdate(BaseModel):
+    transaction_type: Optional[str] = None
+    category: Optional[str] = None
+    amount: Optional[float] = None
+    description: Optional[str] = None
+    villa_number: Optional[str] = None
+    resident_name: Optional[str] = None
+    transaction_date: Optional[datetime] = None
+
+class BudgetTransaction(BudgetTransactionBase):
+    id: int
+    created_by_id: int
+    created_by: User
+    created_at: datetime
     
     class Config:
         from_attributes = True

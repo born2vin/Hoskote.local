@@ -15,6 +15,7 @@ export const ideasApi = {
   update: (id, data) => api.put(`/api/ideas/${id}`, data),
   delete: (id) => api.delete(`/api/ideas/${id}`),
   vote: (id, voteType) => api.post(`/api/ideas/${id}/vote?vote_type=${voteType}`),
+  updateStatus: (id, data) => api.patch(`/api/ideas/${id}/status`, data),
 };
 
 // Alerts API
@@ -58,6 +59,21 @@ export const usersApi = {
   getAll: (params = {}) => api.get('/api/users/', { params }),
   getById: (id) => api.get(`/api/users/${id}`),
   updateProfile: (data) => api.put('/api/users/me', data),
+};
+
+// Issues API
+export const issuesApi = {
+  getAll: (params = {}) => api.get('/api/issues/', { params }),
+  create: (data) => api.post('/api/issues/', data),
+  updateStatus: (id, data) => api.patch(`/api/issues/${id}/status`, data),
+};
+
+// Budgeting API
+export const budgetingApi = {
+  getAll: (params = {}) => api.get('/api/budgeting/', { params }),
+  create: (data) => api.post('/api/budgeting/', data),
+  update: (id, data) => api.put(`/api/budgeting/${id}`, data),
+  delete: (id) => api.delete(`/api/budgeting/${id}`),
 };
 
 // Maintenance Payments API

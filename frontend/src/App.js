@@ -8,13 +8,13 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Ideas from './pages/Ideas';
 import Alerts from './pages/Alerts';
+import Issues from './pages/Issues';
 import Marketplace from './pages/Marketplace';
-import Expenses from './pages/Expenses';
-import MaintenancePayments from './pages/MaintenancePayments';
+import Budgeting from './pages/Budgeting';
 import Profile from './pages/Profile';
 import './i18n/i18n';
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, allowedRoles }) {
   const { user, loading } = useAuth();
   
   if (loading) {
@@ -39,7 +39,9 @@ function ProtectedRoute({ children }) {
     );
   }
   
-  return user ? children : <Navigate to="/login" />;
+  if (!user) return <Navigate to="/login" />;
+  if (allowedRoles && !allowedRoles.includes(user.role)) return <Navigate to="/dashboard" />;
+  return children;
 }
 
 function AppContent() {
@@ -66,10 +68,12 @@ function AppContent() {
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/ideas" element={<ProtectedRoute><Ideas /></ProtectedRoute>} />
           <Route path="/alerts" element={<ProtectedRoute><Alerts /></ProtectedRoute>} />
+          <Route path="/issues" element={<ProtectedRoute><Issues /></ProtectedRoute>} />
           <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
-          <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
-          <Route path="/maintenance" element={<ProtectedRoute><MaintenancePayments /></ProtectedRoute>} />
+          <Route path="/budgeting" element={<ProtectedRoute allowedRoles={['Admin', 'Delegated Admin']}><Budgeting /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/expenses" element={<Navigate to="/budgeting" />} />
+          <Route path="/maintenance" element={<Navigate to="/budgeting" />} />
           <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
         </Routes>
       </Box>

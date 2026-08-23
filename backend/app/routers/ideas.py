@@ -5,7 +5,7 @@ from typing import List, Optional
 from ..database import get_db
 from ..models import User, Idea
 from ..schemas import Idea as IdeaSchema, IdeaCreate, IdeaUpdate
-from ..auth import get_current_active_user
+from ..auth import get_current_active_user, require_roles
 
 router = APIRouter()
 
@@ -121,3 +121,22 @@ async def delete_idea(
     db.delete(idea)
     db.commit()
     return {"message": "Idea deleted successfully"}
+
+@router.patch("/{idea_id}/status", response_model=IdeaSchema)
+async def update_idea_status(
+    idea_id: int,
+    idea_update: IdeaUpdate,
+    current_user: User = Depends(require_roles(["Admin", "Delegated Admin"])),
+    db: Session = Depends(get_db)
+):
+    """Change an idea's status (Admin/Delegated Admin only)."""
+    idea = db.query(Idea).filter(Idea.id == idea_id).first()
+    if idea is None:
+        raise HTTPException(status_code=404, detail="Idea not found")
+
+    if idea_update.status is not None:
+        idea.status = idea_update.status
+
+    db.commit()
+    db.refresh(idea)
+    return idea

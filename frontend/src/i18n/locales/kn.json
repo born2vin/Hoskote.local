@@ -40,9 +40,9 @@
     "dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
     "ideas": "ಆಲೋಚನೆಗಳು",
     "alerts": "ಎಚ್ಚರಿಕೆಗಳು",
+    "issues": "ಸಮಸ್ಯೆಗಳು",
     "marketplace": "ಮಾರುಕಟ್ಟೆ",
-    "expenses": "ಖರ್ಚುಗಳು",
-    "maintenance": "ನಿರ್ವಹಣೆ",
+    "budgeting": "ಬಜೆಟ್",
     "notifications": "ಅಧಿಸೂಚನೆಗಳು",
     "profileSettings": "ಪ್ರೊಫೈಲ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
     "signedInAs": "ಹೀಗೆ ಸೈನ್ ಇನ್ ಆಗಿದ್ದೀರಿ"
@@ -103,7 +103,10 @@
     "latestIdeas": "💡 ಇತ್ತೀಚಿನ ಆಲೋಚನೆಗಳು",
     "safetyUpdates": "🚨 ಸುರಕ್ಷತಾ ನವೀಕರಣಗಳು",
     "viewAllIdeas": "ಎಲ್ಲಾ ಆಲೋಚನೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ",
-    "viewAllAlerts": "ಎಲ್ಲಾ ಎಚ್ಚರಿಕೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ"
+    "viewAllAlerts": "ಎಲ್ಲಾ ಎಚ್ಚರಿಕೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ",
+    "totalIncome": "ಒಟ್ಟು ಆದಾಯ",
+    "totalExpenses": "ಒಟ್ಟು ಖರ್ಚು",
+    "netBalance": "ಶುಟ್ಟು ಬಾಕಿ"
   },
   "ideas": {
     "title": "💡 ಸಮುದಾಯ ಆಲೋಚನೆಗಳು",
@@ -283,9 +286,72 @@
       "Other": "ಇತರೆ"
     },
     "status": {
-      "pending": "ಬಾಕಿ ಇದೆ",
-      "settled": "ಸೆಟಲ್ ಆಗಿದೆ",
-      "cancelled": "ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ"
+      "active": "ಸಕ್ರಿಯ",
+      "resolved": "ಪರಿಹರಿಸಲಾಗಿದೆ",
+      "false_alarm": "ಸುಳ್ಳು ಎಚ್ಚರಿಕೆ"
+    }
+  },
+  "issues": {
+    "title": "ಸಮುದಾಯ ಸಮಸ್ಯೆಗಳು",
+    "reportIssue": "ಸಮಸ್ಯೆ ವರದಿ ಮಾಡಿ",
+    "allIssues": "ಎಲ್ಲಾ ಸಮಸ್ಯೆಗಳು",
+    "open": "ತೆರೆಯಲಾಗಿದೆ",
+    "inProgress": "ಪ್ರಗತಿಯಲ್ಲಿ",
+    "resolved": "ಪರಿಹರಿಸಲಾಗಿದೆ",
+    "myIssues": "ನನ್ನ ಸಮಸ್ಯೆಗಳು",
+    "loadingIssues": "ಸಮಸ್ಯೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...",
+    "reportAnIssue": "ಸಮಸ್ಯೆಯನ್ನು ವರದಿ ಮಾಡಿ",
+    "title_field": "ಶೀರ್ಷಿಕೆ",
+    "description": "ವಿವರಣೆ",
+    "category": "ವರ್ಗ",
+    "reporting": "ವರದಿ ಮಾಡಲಾಗುತ್ತಿದೆ...",
+    "titleRequired": "ಶೀರ್ಷಿಕೆ ಅಗತ್ಯವಿದೆ",
+    "descriptionRequired": "ವಿವರಣೆ ಅಗತ್ಯವಿದೆ",
+    "categoryRequired": "ವರ್ಗ ಅಗತ್ಯವಿದೆ",
+    "categories": {
+      "Garbage Collection": "ಅಪಮಾರ್ಜನ ಸಂಗ್ರಹ",
+      "Electricity": "ವಿದ್ಯುತ್",
+      "Gardening": "ತೋಟಗಾರಿಕೆ",
+      "STP Cleaning": "STP ಶುಚೀಕರಣ",
+      "Water Supply": "ನೀರು ಪೂರೈಕೆ",
+      "General": "ಸಾಮಾನ್ಯ"
+    },
+    "status": {
+      "Open": "ತೆರೆಯಲಾಗಿದೆ",
+      "In Progress": "ಪ್ರಗತಿಯಲ್ಲಿ",
+      "Resolved": "ಪರಿಹರಿಸಲಾಗಿದೆ"
+    }
+  },
+  "budgeting": {
+    "title": "ಬಜೆಟ್",
+    "addTransaction": "ವ್ಯವಹಾರ ಸೇರಿಸಿ",
+    "allTransactions": "ಎಲ್ಲಾ ವ್ಯವಹಾರಗಳು",
+    "income": "ಆದಾಯ",
+    "expenses": "ಖರ್ಚುಗಳು",
+    "amount": "ಮೊತ್ತ",
+    "type": "ಪ್ರಕಾರ",
+    "description": "ವಿವರಣೆ",
+    "adding": "ಸೇರಿಸಲಾಗುತ್ತಿದೆ...",
+    "updating": "ನವೀಕರಿಸಲಾಗುತ್ತಿದೆ...",
+    "titleRequired": "ಶೀರ್ಷಿಕೆ ಅಗತ್ಯವಿದೆ",
+    "amountRequired": "ಮೊತ್ತ ಅಗತ್ಯವಿದೆ",
+    "categoryRequired": "ವರ್ಗ ಅಗತ್ಯವಿದೆ",
+    "amountMustBePositive": "ಮೊತ್ತವು 0 ಕ್ಕಿಂತ ಹೆಚ್ಚಿರಬೇಕು",
+    "categories": {
+      "Maintenance": "ನಿರ್ವಹಣೆ",
+      "Donation": "ದೇಣಿಗೆ",
+      "Event": "ಕಾರ್ಯಕ್ರಮ",
+      "Utilities": "ಉಪಯುಕ್ತತೆಗಳು",
+      "Cleaning": "ಸ್ವಚ್ಛತೆ",
+      "Security": "ಭದ್ರತೆ",
+      "Landscaping": "ಲ್ಯಾಂಡ್‌ಸ್ಕೇಪಿಂಗ್",
+      "Repairs": "ದುರಸ್ತಿಗಳು",
+      "Supplies": "ಸಾಮಗ್ರಿಗಳು",
+      "Other": "ಇತರೆ"
+    },
+    "types": {
+      "Income": "ಆದಾಯ",
+      "Expense": "ಖರ್ಚು"
     }
   },
   "profile": {

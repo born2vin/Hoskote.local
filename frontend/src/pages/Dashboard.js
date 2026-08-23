@@ -19,7 +19,7 @@ import {
   Store,
   AccountBalance,
   TrendingUp,
-  People,
+  TrendingDown,
   Notifications,
   Assignment,
   ArrowForward,
@@ -28,7 +28,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { useAuth } from '../contexts/AuthContext';
-import { ideasApi, alertsApi, marketplaceApi, expensesApi } from '../services/api';
+import { ideasApi, alertsApi, marketplaceApi, expensesApi, budgetingApi } from '../services/api';
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -39,6 +39,7 @@ const Dashboard = () => {
   const { data: activeAlerts } = useQuery('active-alerts', () => alertsApi.getActive({ limit: 5 }));
   const { data: marketplaceItems } = useQuery('marketplace-items', () => marketplaceApi.getAll({ limit: 5 }));
   const { data: expenses } = useQuery('recent-expenses', () => expensesApi.getAll({ limit: 5, my_expenses_only: true }));
+  const { data: budgetData } = useQuery('budget-overview', () => budgetingApi.getAll({ limit: 100 }));
 
   const quickActions = [
     {
@@ -99,6 +100,27 @@ const Dashboard = () => {
       icon: <Assignment />,
       color: '#8b5cf6',
       progress: 40,
+    },
+    {
+      title: t('dashboard.totalIncome'),
+      value: `₹${(budgetData?.data?.filter(tx => tx.transaction_type === 'Income').reduce((sum, tx) => sum + tx.amount, 0) || 0).toFixed(0)}`,
+      icon: <TrendingUp />,
+      color: '#10b981',
+      progress: 60,
+    },
+    {
+      title: t('dashboard.totalExpenses'),
+      value: `₹${(budgetData?.data?.filter(tx => tx.transaction_type === 'Expense').reduce((sum, tx) => sum + tx.amount, 0) || 0).toFixed(0)}`,
+      icon: <TrendingDown />,
+      color: '#ef4444',
+      progress: 40,
+    },
+    {
+      title: t('dashboard.netBalance'),
+      value: `₹${((budgetData?.data?.filter(tx => tx.transaction_type === 'Income').reduce((sum, tx) => sum + tx.amount, 0) || 0) - (budgetData?.data?.filter(tx => tx.transaction_type === 'Expense').reduce((sum, tx) => sum + tx.amount, 0) || 0)).toFixed(0)}`,
+      icon: <AccountBalance />,
+      color: '#6366f1',
+      progress: 50,
     },
   ];
 

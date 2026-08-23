@@ -72,6 +72,21 @@ const Ideas = () => {
     }
   );
 
+  const statusMutation = useMutation(
+    ({ id, status }) => ideasApi.updateStatus(id, { status }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('ideas');
+      },
+    }
+  );
+
+  const isApprover = user?.role === 'Admin' || user?.role === 'Delegated Admin';
+
+  const handleApprove = (ideaId) => {
+    statusMutation.mutate({ id: ideaId, status: 'approved' });
+  };
+
   const categories = [
     'Environment',
     'Education',
@@ -356,9 +371,29 @@ const Ideas = () => {
                           </Tooltip>
                         </Box>
                         
-                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
-                          #{idea.id}
-                        </Typography>
+                         {isApprover && idea.status !== 'approved' && (
+                           <Button
+                             size="small"
+                             variant="contained"
+                             startIcon={<CheckCircle />}
+                             onClick={() => handleApprove(idea.id)}
+                             disabled={statusMutation.isLoading}
+                             sx={{
+                               background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                               borderRadius: 2,
+                               px: 1.5,
+                               '&:hover': {
+                                 background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                               },
+                             }}
+                           >
+                             Approve
+                           </Button>
+                         )}
+
+                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                           #{idea.id}
+                         </Typography>
                       </Box>
                     </CardContent>
                   </Card>

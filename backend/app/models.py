@@ -25,6 +25,7 @@ class User(Base):
     address = Column(Text)
     villa_number = Column(String(20))
     is_active = Column(Boolean, default=True)
+    role = Column(String(20), default="Resident")
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships
@@ -32,7 +33,8 @@ class User(Base):
     alerts = relationship("Alert", back_populates="author")
     marketplace_items = relationship("MarketplaceItem",back_populates="seller", foreign_keys="[MarketplaceItem.seller_id]")
     created_expenses = relationship("Expense", back_populates="created_by")
-    participated_expenses = relationship("Expense", secondary=expense_participants, back_populates="participants")
+    # participated_expenses = relationship("User", secondary=expense_participants, back_populates="participated_expenses")
+    issues = relationship("Issue", back_populates="author")
 
 class Idea(Base):
     __tablename__ = "ideas"
@@ -40,8 +42,8 @@ class Idea(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(200), nullable=False)
     description = Column(Text, nullable=False)
-    category = Column(String(50), nullable=False)  # environment, education, health, etc.
-    status = Column(String(20), default="pending")  # pending, approved, rejected, implemented
+    category = Column(String(50), nullable=False)
+    status = Column(String(20), default="pending")
     votes_up = Column(Integer, default=0)
     votes_down = Column(Integer, default=0)
     author_id = Column(Integer, ForeignKey("users.id"), nullable=False)
@@ -57,12 +59,12 @@ class Alert(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(200), nullable=False)
     description = Column(Text, nullable=False)
-    alert_type = Column(String(50), nullable=False)  # theft, robbery, emergency, suspicious_activity
+    alert_type = Column(String(50), nullable=False)
     location = Column(String(200), nullable=False)
     latitude = Column(Float)
     longitude = Column(Float)
-    severity = Column(String(20), default="medium")  # low, medium, high, critical
-    status = Column(String(20), default="active")  # active, resolved, false_alarm
+    severity = Column(String(20), default="medium")
+    status = Column(String(20), default="active")
     author_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     resolved_at = Column(DateTime)
@@ -77,12 +79,12 @@ class MarketplaceItem(Base):
     buyer_id = Column(Integer, ForeignKey("users.id"))
     title = Column(String(200), nullable=False)
     description = Column(Text, nullable=False)
-    category = Column(String(50), nullable=False)  # electronics, books, tools, furniture, etc.
-    item_type = Column(String(20), nullable=False)  # lend, borrow, both
-    condition = Column(String(20), default="good")  # excellent, good, fair, poor
+    category = Column(String(50), nullable=False)
+    item_type = Column(String(20), nullable=False)
+    condition = Column(String(20), default="good")
     availability = Column(Boolean, default=True)
-    duration_max = Column(Integer)  # max days for lending
-    price_per_day = Column(Float, default=0.0)  # optional rental fee
+    duration_max = Column(Integer)
+    price_per_day = Column(Float, default=0.0)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     current_borrower_id = Column(Integer, ForeignKey("users.id"))
     borrowed_at = Column(DateTime)
@@ -99,9 +101,9 @@ class Expense(Base):
     title = Column(String(200), nullable=False)
     description = Column(Text)
     total_amount = Column(Float, nullable=False)
-    category = Column(String(50), nullable=False)  # maintenance, events, utilities, etc.
-    split_type = Column(String(20), default="equal")  # equal, custom, by_percentage
-    status = Column(String(20), default="pending")  # pending, settled, cancelled
+    category = Column(String(50), nullable=False)
+    split_type = Column(String(20), default="equal")
+    status = Column(String(20), default="pending")
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     due_date = Column(DateTime)
@@ -109,7 +111,7 @@ class Expense(Base):
     
     # Relationships
     created_by = relationship("User", back_populates="created_expenses")
-    participants = relationship("User", secondary=expense_participants, back_populates="participated_expenses")
+    #participants = relationship("User", secondary=expense_participants, back_populates="participated_expenses")
     splits = relationship("ExpenseSplit", back_populates="expense")
 
 class ExpenseSplit(Base):
@@ -144,3 +146,35 @@ class MaintenancePayment(Base):
     
     # Relationships
     user = relationship("User")
+
+class Issue(Base):
+    __tablename__ = "issues"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(200), nullable=False)
+    category = Column(String(50), nullable=False)
+    description = Column(Text, nullable=False)
+    status = Column(String(20), default="Open")
+    author_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    author = relationship("User", back_populates="issues")
+
+class BudgetTransaction(Base):
+    __tablename__ = "budget_transactions"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    transaction_type = Column(String(20), nullable=False)
+    category = Column(String(50), nullable=False)
+    amount = Column(Float, nullable=False)
+    description = Column(Text)
+    villa_number = Column(String(20))  # required for income (maintenance) transactions
+    resident_name = Column(String(100))  # required for income (maintenance) transactions
+    transaction_date = Column(DateTime, default=datetime.utcnow)
+    created_by_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    created_by = relationship("User")

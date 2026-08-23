@@ -40,10 +40,10 @@
     "dashboard": "Dashboard",
     "ideas": "Ideas",
     "alerts": "Alerts",
+    "issues": "Issues",
     "marketplace": "Marketplace",
-    "expenses": "Expenses",
+    "budgeting": "Budgeting",
     "notifications": "Notifications",
-    "maintenance": "Maintenance",
     "profileSettings": "Profile Settings",
     "signedInAs": "Signed in as"
   },
@@ -103,7 +103,10 @@
     "latestIdeas": "💡 Latest Ideas",
     "safetyUpdates": "🚨 Safety Updates",
     "viewAllIdeas": "View All Ideas",
-    "viewAllAlerts": "View All Alerts"
+    "viewAllAlerts": "View All Alerts",
+    "totalIncome": "Total Income",
+    "totalExpenses": "Total Expenses",
+    "netBalance": "Net Balance"
   },
   "ideas": {
     "title": "💡 Community Ideas",
@@ -283,9 +286,72 @@
       "Other": "Other"
     },
     "status": {
-      "pending": "Pending",
-      "settled": "Settled",
-      "cancelled": "Cancelled"
+      "active": "Active",
+      "resolved": "Resolved",
+      "false_alarm": "False Alarm"
+    }
+  },
+  "issues": {
+    "title": "Community Issues",
+    "reportIssue": "Report Issue",
+    "allIssues": "All Issues",
+    "open": "Open",
+    "inProgress": "In Progress",
+    "resolved": "Resolved",
+    "myIssues": "My Issues",
+    "loadingIssues": "Loading issues...",
+    "reportAnIssue": "Report an Issue",
+    "title_field": "Title",
+    "description": "Description",
+    "category": "Category",
+    "reporting": "Reporting...",
+    "titleRequired": "Title is required",
+    "descriptionRequired": "Description is required",
+    "categoryRequired": "Category is required",
+    "categories": {
+      "Garbage Collection": "Garbage Collection",
+      "Electricity": "Electricity",
+      "Gardening": "Gardening",
+      "STP Cleaning": "STP Cleaning",
+      "Water Supply": "Water Supply",
+      "General": "General"
+    },
+    "status": {
+      "Open": "Open",
+      "In Progress": "In Progress",
+      "Resolved": "Resolved"
+    }
+  },
+  "budgeting": {
+    "title": "Budgeting",
+    "addTransaction": "Add Transaction",
+    "allTransactions": "All Transactions",
+    "income": "Income",
+    "expenses": "Expenses",
+    "amount": "Amount",
+    "type": "Type",
+    "description": "Description",
+    "adding": "Adding...",
+    "updating": "Updating...",
+    "titleRequired": "Title is required",
+    "amountRequired": "Amount is required",
+    "categoryRequired": "Category is required",
+    "amountMustBePositive": "Amount must be greater than 0",
+    "categories": {
+      "Maintenance": "Maintenance",
+      "Donation": "Donation",
+      "Event": "Event",
+      "Utilities": "Utilities",
+      "Cleaning": "Cleaning",
+      "Security": "Security",
+      "Landscaping": "Landscaping",
+      "Repairs": "Repairs",
+      "Supplies": "Supplies",
+      "Other": "Other"
+    },
+    "types": {
+      "Income": "Income",
+      "Expense": "Expense"
     }
   },
   "profile": {
