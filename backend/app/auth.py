@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 from typing import Optional, List
 from jose import JWTError, jwt
@@ -11,7 +12,7 @@ from .models import User
 from .schemas import TokenData
 
 # Security configuration
-SECRET_KEY = "GHVuBoT_oimF2AII3wYYFlmdg5FUD_GbYAM7XXI6794"
+SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
