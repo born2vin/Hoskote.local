@@ -17,9 +17,13 @@ app = FastAPI(
 )
 
 # CORS middleware
+# `os.environ.get(key, default)` only falls back when the key is absent, not
+# when it's present-but-blank (e.g. an env var saved empty in a host's
+# dashboard) — `or` catches that case too, since an empty string is falsy.
+cors_origins_raw = os.environ.get("CORS_ORIGINS") or "http://localhost:3000"
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.environ.get("CORS_ORIGINS", "http://localhost:3000").split(","),
+    allow_origins=[origin.strip() for origin in cors_origins_raw.split(",") if origin.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
