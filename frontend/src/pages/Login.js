@@ -113,8 +113,23 @@ const Login = () => {
               </InputAdornment>
             ),
           }}
-          sx={{ mb: 3 }}
+          sx={{ mb: 1 }}
         />
+
+        <Box sx={{ textAlign: 'right', mb: 2 }}>
+          <Link
+            component="button"
+            type="button"
+            variant="body2"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate('/forgot-password');
+            }}
+            sx={{ color: 'text.secondary', textDecoration: 'none', '&:hover': { textDecoration: 'underline', color: 'secondary.main' } }}
+          >
+            {t('auth.forgotPassword')}
+          </Link>
+        </Box>
 
         <Button
           type="submit"

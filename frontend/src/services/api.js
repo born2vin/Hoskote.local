@@ -45,6 +45,8 @@ export const marketplaceApi = {
 // Auth API
 export const authApi = {
   checkVilla: (villaNumber) => api.get(`/api/auth/check-villa/${villaNumber}`),
+  forgotPassword: (email) => api.post('/api/auth/forgot-password', { email }),
+  resetPassword: (token, newPassword) => api.post('/api/auth/reset-password', { token, new_password: newPassword }),
 };
 
 // Users API

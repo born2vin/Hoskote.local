@@ -314,6 +314,25 @@ class BudgetTransaction(BudgetTransactionBase):
     created_by_id: int
     created_by: User
     created_at: datetime
-    
+
     class Config:
         from_attributes = True
+
+# Password reset schemas
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+    @field_validator('new_password')
+    @classmethod
+    def validate_password_strength(cls, value):
+        if len(value) < 8:
+            raise ValueError('Password must be at least 8 characters')
+        if not re.search(r'[A-Za-z]', value):
+            raise ValueError('Password must contain at least one letter')
+        if not re.search(r'\d', value):
+            raise ValueError('Password must contain at least one number')
+        return value
