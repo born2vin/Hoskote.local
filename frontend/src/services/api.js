@@ -42,6 +42,11 @@ export const marketplaceApi = {
   delete: (id) => api.delete(`/api/marketplace/${id}`),
 };
 
+// Auth API
+export const authApi = {
+  checkVilla: (villaNumber) => api.get(`/api/auth/check-villa/${villaNumber}`),
+};
+
 // Users API
 export const usersApi = {
   getAll: (params = {}) => api.get('/api/users/', { params }),

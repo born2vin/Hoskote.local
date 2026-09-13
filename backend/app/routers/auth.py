@@ -42,14 +42,25 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         full_name=user.full_name,
         phone=user.phone,
         address=user.address,
+        villa_number=user.villa_number,
         hashed_password=hashed_password
     )
-    
+
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    
+
     return db_user
+
+@router.get("/check-villa/{villa_number}")
+async def check_villa_number(villa_number: str, db: Session = Depends(get_db)):
+    """Check whether a villa number is already registered to a resident.
+
+    Public (no auth) since this is used on the registration form before a
+    user has an account. Only returns a boolean -- no user details.
+    """
+    exists = db.query(User).filter(User.villa_number == villa_number).first() is not None
+    return {"exists": exists}
 
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):

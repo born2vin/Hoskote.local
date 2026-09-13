@@ -13,12 +13,15 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import AuthLayout from '../components/AuthLayout';
+import { authApi } from '../services/api';
 
 const Register = () => {
   const { t } = useTranslation();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [villaTaken, setVillaTaken] = useState(false);
+  const [checkingVilla, setCheckingVilla] = useState(false);
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
 
@@ -31,6 +34,30 @@ const Register = () => {
 
   const password = watch('password');
 
+  const villaField = register('villa_number', {
+    required: t('auth.villaNumberRequired'),
+    pattern: { value: /^\d{3}$/, message: t('auth.villaNumberFormat') },
+  });
+
+  const handleVillaBlur = async (e) => {
+    const value = e.target.value;
+    if (!/^\d{3}$/.test(value)) {
+      setVillaTaken(false);
+      return;
+    }
+    setCheckingVilla(true);
+    try {
+      const response = await authApi.checkVilla(value);
+      setVillaTaken(!!response.data?.exists);
+    } catch {
+      // Non-blocking: if the check itself fails (e.g. network hiccup),
+      // don't stop the user from continuing to fill out the form.
+      setVillaTaken(false);
+    } finally {
+      setCheckingVilla(false);
+    }
+  };
+
   const onSubmit = async (data) => {
     setLoading(true);
     setError('');
@@ -42,6 +69,7 @@ const Register = () => {
       full_name: data.full_name,
       phone: data.phone || null,
       address: data.address || null,
+      villa_number: data.villa_number,
       password: data.password,
     });
 
@@ -123,6 +151,33 @@ const Register = () => {
               {...register('full_name', { required: t('auth.fullNameRequired') })}
               error={!!errors.full_name}
               helperText={errors.full_name?.message}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              {...villaField}
+              onBlur={(e) => {
+                villaField.onBlur(e);
+                handleVillaBlur(e);
+              }}
+              required
+              fullWidth
+              id="villa_number"
+              label={t('auth.villaNumber')}
+              inputProps={{ maxLength: 3, inputMode: 'numeric', pattern: '[0-9]*' }}
+              error={!!errors.villa_number}
+              helperText={
+                errors.villa_number?.message
+                  || (checkingVilla ? t('common.loading') : (villaTaken ? t('auth.villaNumberTaken') : ' '))
+              }
+              sx={
+                !errors.villa_number && villaTaken
+                  ? {
+                      '& .MuiOutlinedInput-root fieldset': { borderColor: 'warning.main' },
+                      '& .MuiFormHelperText-root': { color: 'warning.main' },
+                    }
+                  : undefined
+              }
             />
           </Grid>
           <Grid item xs={12} sm={6}>

@@ -1,3 +1,4 @@
+import re
 from pydantic import BaseModel, EmailStr, validator, model_validator, field_validator
 from datetime import datetime
 from typing import Optional, List
@@ -10,16 +11,26 @@ class UserBase(BaseModel):
     full_name: str
     phone: Optional[str] = None
     address: Optional[str] = None
+    villa_number: Optional[str] = None
     role: Optional[str] = "Resident"
 
 class UserCreate(UserBase):
     password: str
 
+    @field_validator('villa_number')
+    @classmethod
+    def villa_number_must_be_three_digits(cls, value):
+        if value is None or not re.fullmatch(r'\d{3}', value):
+            raise ValueError('Villa number must be exactly 3 digits')
+        return value
+
+# Note: `role` is intentionally excluded here. It previously allowed any
+# authenticated user to grant themselves Admin via PUT /api/users/me, since
+# this schema's fields are mass-assigned directly onto the User model.
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     phone: Optional[str] = None
     address: Optional[str] = None
-    role: Optional[str] = None
 
 class User(UserBase):
     id: int

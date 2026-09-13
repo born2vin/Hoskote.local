@@ -71,6 +71,9 @@ const Profile = () => {
               <Typography variant="body2" color="text.secondary">
                 Username: {user?.username}
               </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Villa Number: {user?.villa_number || 'Not set'}
+              </Typography>
             </Box>
           </Box>
 
