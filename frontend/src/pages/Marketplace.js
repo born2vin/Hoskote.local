@@ -33,6 +33,7 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { marketplaceApi } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { format } from 'date-fns';
+import PageHeader from '../components/PageHeader';
 
 const Marketplace = () => {
   const [open, setOpen] = useState(false);
@@ -167,59 +168,26 @@ const Marketplace = () => {
   };
 
   return (
-    <Box sx={{ 
-      background: 'transparent',
-      minHeight: 'calc(100vh - 80px)',
-      py: 3,
-    }}>
+    <Box sx={{ minHeight: 'calc(100vh - 80px)', py: 3 }}>
     <Container maxWidth="lg">
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-         <box><Typography 
-                      variant="h3" 
-                      sx={{ 
-                        fontWeight: 700,
-                        color: 'white',
-                        textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                        mb: 1,
-                      }}
-                    >🏬 Community Marketplace</Typography><Typography 
-                                  variant="h8" 
-                                  sx={{ 
-                                    color: 'rgba(255, 255, 255, 0.9)',
-                                    fontWeight: 400,
-                                  }}
-                                >
-                                  Share items with your neighbors or find something you need. Browse, lend, and borrow items within your community.
-                                </Typography></box>
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          onClick={() => setOpen(true)}
-        >
-          Add Item
-        </Button>
-      </Box>
-      <Box sx={{ 
-          background: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          borderRadius: 3,
-          mb: 3,
-        }}>
-        <Tabs value={tab} 
-            onChange={(e, newValue) => setTab(newValue)} 
-            sx={{ 
-              px: 2,
-              '& .MuiTab-root': {
-                fontWeight: 600,
-                fontSize: '0.95rem',
-              },
-            }}>
+      <PageHeader
+        icon="🏬"
+        title="Community Marketplace"
+        subtitle="Share items with your neighbors or find something you need. Browse, lend, and borrow items within your community."
+        action={
+          <Button variant="contained" startIcon={<Add />} onClick={() => setOpen(true)}>
+            Add Item
+          </Button>
+        }
+      />
+      <Card sx={{ mb: 3 }}>
+        <Tabs value={tab}
+            onChange={(e, newValue) => setTab(newValue)}
+            sx={{ px: 2 }}>
         <Tab label="Browse Items" />
         <Tab label="My Items" />
         <Tab label="Borrowed Items" />
-      </Tabs></Box>
-
+      </Tabs></Card>
 
       <Grid container spacing={3}>
         {isLoading ? (

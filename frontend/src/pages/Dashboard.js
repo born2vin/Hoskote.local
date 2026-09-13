@@ -2,9 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Container,
-  Grid,
   Card,
-  CardContent,
   Typography,
   Box,
   Button,
@@ -28,7 +26,25 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { useAuth } from '../contexts/AuthContext';
-import { ideasApi, alertsApi, marketplaceApi, expensesApi, budgetingApi } from '../services/api';
+import { ideasApi, alertsApi, marketplaceApi, budgetingApi } from '../services/api';
+import PageHeader from '../components/PageHeader';
+
+// A dense, gap-filling bento grid — tiles declare how much space they need
+// and `gridAutoFlow: dense` packs the rest around them.
+const BentoGrid = ({ children, sx, ...props }) => (
+  <Box
+    sx={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(12, 1fr)',
+      gridAutoFlow: 'dense',
+      gap: { xs: 2, sm: 2.5, md: 3 },
+      ...sx,
+    }}
+    {...props}
+  >
+    {children}
+  </Box>
+);
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -38,426 +54,230 @@ const Dashboard = () => {
   const { data: ideas } = useQuery('recent-ideas', () => ideasApi.getAll({ limit: 5 }));
   const { data: activeAlerts } = useQuery('active-alerts', () => alertsApi.getActive({ limit: 5 }));
   const { data: marketplaceItems } = useQuery('marketplace-items', () => marketplaceApi.getAll({ limit: 5 }));
-  const { data: expenses } = useQuery('recent-expenses', () => expensesApi.getAll({ limit: 5, my_expenses_only: true }));
   const { data: budgetData } = useQuery('budget-overview', () => budgetingApi.getAll({ limit: 100 }));
+
+  const totalIncome = budgetData?.data?.filter(tx => tx.transaction_type === 'Income').reduce((sum, tx) => sum + tx.amount, 0) || 0;
+  const totalExpenses = budgetData?.data?.filter(tx => tx.transaction_type === 'Expense').reduce((sum, tx) => sum + tx.amount, 0) || 0;
+  const netBalance = totalIncome - totalExpenses;
 
   const quickActions = [
     {
       title: t('dashboard.shareIdea.title'),
       description: t('dashboard.shareIdea.description'),
       icon: <Lightbulb />,
-      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      colorKey: 'success',
       action: () => navigate('/ideas'),
     },
     {
       title: t('dashboard.reportAlert.title'),
       description: t('dashboard.reportAlert.description'),
       icon: <Warning />,
-      gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+      colorKey: 'warning',
       action: () => navigate('/alerts'),
     },
     {
       title: t('dashboard.browseItems.title'),
       description: t('dashboard.browseItems.description'),
       icon: <Store />,
-      gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+      colorKey: 'info',
       action: () => navigate('/marketplace'),
     },
     {
       title: t('dashboard.splitExpenses.title'),
       description: t('dashboard.splitExpenses.description'),
       icon: <AccountBalance />,
-      gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+      colorKey: 'secondary',
       action: () => navigate('/expenses'),
     },
   ];
 
   const stats = [
-    {
-      title: 'Active Ideas',
-      value: ideas?.data?.length || 0,
-      icon: <TrendingUp />,
-      color: '#10b981',
-      progress: 75,
-    },
-    {
-      title: 'Safety Alerts',
-      value: activeAlerts?.data?.length || 0,
-      icon: <Notifications />,
-      color: '#ef4444',
-      progress: 25,
-    },
-    {
-      title: 'Items Available',
-      value: marketplaceItems?.data?.length || 0,
-      icon: <Store />,
-      color: '#3b82f6',
-      progress: 60,
-    },
-    {
-      title: 'Pending Expenses',
-      value: expenses?.data?.filter(e => e.status === 'pending').length || 0,
-      icon: <Assignment />,
-      color: '#8b5cf6',
-      progress: 40,
-    },
-    {
-      title: t('dashboard.totalIncome'),
-      value: `₹${(budgetData?.data?.filter(tx => tx.transaction_type === 'Income').reduce((sum, tx) => sum + tx.amount, 0) || 0).toFixed(0)}`,
-      icon: <TrendingUp />,
-      color: '#10b981',
-      progress: 60,
-    },
-    {
-      title: t('dashboard.totalExpenses'),
-      value: `₹${(budgetData?.data?.filter(tx => tx.transaction_type === 'Expense').reduce((sum, tx) => sum + tx.amount, 0) || 0).toFixed(0)}`,
-      icon: <TrendingDown />,
-      color: '#ef4444',
-      progress: 40,
-    },
-    {
-      title: t('dashboard.netBalance'),
-      value: `₹${((budgetData?.data?.filter(tx => tx.transaction_type === 'Income').reduce((sum, tx) => sum + tx.amount, 0) || 0) - (budgetData?.data?.filter(tx => tx.transaction_type === 'Expense').reduce((sum, tx) => sum + tx.amount, 0) || 0)).toFixed(0)}`,
-      icon: <AccountBalance />,
-      color: '#6366f1',
-      progress: 50,
-    },
+    { title: 'Active Ideas', value: ideas?.data?.length || 0, icon: <TrendingUp />, colorKey: 'success', progress: 75 },
+    { title: 'Safety Alerts', value: activeAlerts?.data?.length || 0, icon: <Notifications />, colorKey: 'error', progress: 25 },
+    { title: 'Items Available', value: marketplaceItems?.data?.length || 0, icon: <Store />, colorKey: 'info', progress: 60 },
+    { title: 'Budget Transactions', value: budgetData?.data?.length || 0, icon: <Assignment />, colorKey: 'secondary', progress: 40 },
   ];
 
   return (
-    <Box sx={{ 
-      background: 'transparent',
-      minHeight: 'calc(100vh - 80px)',
-      py: 3,
-    }}>
+    <Box sx={{ minHeight: 'calc(100vh - 80px)', py: 3 }}>
       <Container maxWidth="lg">
-        {/* Welcome Section */}
-        <Box sx={{ mb: 5 }}>
-          <Typography 
-            variant="h3" 
-            gutterBottom 
-            sx={{ 
-              fontWeight: 700,
-              color: 'white',
-              textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            }}
-          >
-            {t('dashboard.welcomeBack', { name: user?.full_name?.split(' ')[0] || user?.username })}
-          </Typography>
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              color: 'rgba(255, 255, 255, 0.9)',
-              fontWeight: 400,
-            }}
-          >
-            {t('dashboard.happeningToday')}
-          </Typography>
-        </Box>
+        <PageHeader
+          title={t('dashboard.welcomeBack', { name: user?.full_name?.split(' ')[0] || user?.username })}
+          subtitle={t('dashboard.happeningToday')}
+        />
 
-        {/* Stats Cards */}
-        <Grid container spacing={3} sx={{ mb: 5 }}>
+        {/* Bento: net balance hero tile + at-a-glance stats */}
+        <BentoGrid sx={{ mb: { xs: 3, md: 4 } }}>
+          <Card
+            sx={{
+              gridColumn: { xs: 'span 12', md: 'span 4' },
+              gridRow: { md: 'span 2' },
+              p: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              backgroundImage: (t) => `linear-gradient(135deg, ${t.vars.palette.primary.main} 0%, ${t.vars.palette.secondary.main} 100%)`,
+              color: '#fff',
+              border: 'none',
+            }}
+          >
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)' }}>
+                  <AccountBalance />
+                </Avatar>
+                <Typography variant="body1" sx={{ opacity: 0.9, fontWeight: 500 }}>
+                  {t('dashboard.netBalance')}
+                </Typography>
+              </Box>
+              <Typography variant="h2" sx={{ fontWeight: 700, mb: 1 }}>
+                ₹{netBalance.toFixed(0)}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 3, mt: 2 }}>
+              <Box>
+                <Typography variant="caption" sx={{ opacity: 0.8 }}>{t('dashboard.totalIncome')}</Typography>
+                <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <TrendingUp fontSize="small" /> ₹{totalIncome.toFixed(0)}
+                </Typography>
+              </Box>
+              <Box>
+                <Typography variant="caption" sx={{ opacity: 0.8 }}>{t('dashboard.totalExpenses')}</Typography>
+                <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <TrendingDown fontSize="small" /> ₹{totalExpenses.toFixed(0)}
+                </Typography>
+              </Box>
+            </Box>
+          </Card>
+
           {stats.map((stat, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Card
-                sx={{
-                  background: 'rgba(255, 255, 255, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: 3,
-                  transition: 'all 0.3s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-8px)',
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                  },
-                }}
-              >
-                <CardContent sx={{ p: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Avatar 
-                      sx={{ 
-                        bgcolor: stat.color, 
-                        mr: 2,
-                        width: 48,
-                        height: 48,
-                      }}
-                    >
-                      {stat.icon}
-                    </Avatar>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Typography variant="h4" component="div" sx={{ fontWeight: 700 }}>
-                        {stat.value}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {stat.title}
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={stat.progress} 
-                    sx={{ 
-                      height: 6, 
-                      borderRadius: 3,
-                      backgroundColor: 'rgba(0,0,0,0.1)',
-                      '& .MuiLinearProgress-bar': {
-                        backgroundColor: stat.color,
-                        borderRadius: 3,
-                      },
-                    }} 
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
+            <Card key={index} sx={{ gridColumn: { xs: 'span 6', sm: 'span 4', md: 'span 4' }, p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: `${stat.colorKey}.main`, mr: 2, width: 44, height: 44 }}>
+                  {stat.icon}
+                </Avatar>
+                <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                  <Typography variant="h5" sx={{ fontWeight: 700 }}>{stat.value}</Typography>
+                  <Typography variant="body2" color="text.secondary" noWrap>{stat.title}</Typography>
+                </Box>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={stat.progress}
+                color={stat.colorKey === 'secondary' ? 'secondary' : stat.colorKey}
+                sx={{ height: 6 }}
+              />
+            </Card>
           ))}
-        </Grid>
+        </BentoGrid>
 
-        {/* Quick Actions */}
-        <Grid container spacing={3} sx={{ mb: 5 }}>
-          <Grid item xs={12}>
-            <Typography 
-              variant="h5" 
-              gutterBottom 
-              sx={{ 
-                fontWeight: 600,
-                color: 'white',
-                mb: 3,
-              }}
-            >
-              {t('dashboard.quickActions')}
-            </Typography>
-          </Grid>
+        {/* Quick actions */}
+        <Typography variant="h5" sx={{ fontWeight: 600, color: (t) => t.vars.palette.custom.shellText, mb: 2 }}>
+          {t('dashboard.quickActions')}
+        </Typography>
+        <BentoGrid sx={{ mb: { xs: 3, md: 4 } }}>
           {quickActions.map((action, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Card 
-                sx={{ 
-                  background: 'rgba(255, 255, 255, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
+            <Card
+              key={index}
+              sx={{
+                gridColumn: { xs: 'span 12', sm: 'span 6', md: 'span 3' },
+                cursor: 'pointer',
+                textAlign: 'center',
+                py: 4,
+                px: 3,
+              }}
+              onClick={action.action}
+            >
+              <Box
+                sx={{
+                  width: 60,
+                  height: 60,
                   borderRadius: 3,
-                  cursor: 'pointer',
-                  height: '100%',
-                  transition: 'all 0.3s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-8px) scale(1.02)',
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                  },
+                  backgroundImage: (t) => `linear-gradient(135deg, ${t.vars.palette[action.colorKey].main} 0%, ${t.vars.palette[action.colorKey].dark} 100%)`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mx: 'auto',
+                  mb: 2,
                 }}
-                onClick={action.action}
               >
-                <CardContent sx={{ textAlign: 'center', py: 4, px: 3 }}>
-                  <Box
-                    sx={{
-                      width: 64,
-                      height: 64,
-                      borderRadius: 3,
-                      background: action.gradient,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      mx: 'auto',
-                      mb: 2,
-                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                    }}
-                  >
-                    {React.cloneElement(action.icon, { 
-                      sx: { color: 'white', fontSize: 28 } 
-                    })}
-                  </Box>
-                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                    {action.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    {action.description}
-                  </Typography>
-                  <Button
-                    size="small"
-                    endIcon={<ArrowForward />}
-                    sx={{
-                      background: action.gradient,
-                      color: 'white',
-                      borderRadius: 2,
-                      px: 2,
-                      '&:hover': {
-                        background: action.gradient,
-                        transform: 'translateX(4px)',
-                      },
-                    }}
-                  >
-                    Get Started
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
+                {React.cloneElement(action.icon, { sx: { color: 'white', fontSize: 26 } })}
+              </Box>
+              <Typography variant="h6" gutterBottom>{action.title}</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                {action.description}
+              </Typography>
+              <Button size="small" color={action.colorKey === 'secondary' ? 'secondary' : action.colorKey} variant="contained" endIcon={<ArrowForward />}>
+                Get Started
+              </Button>
+            </Card>
           ))}
-        </Grid>
+        </BentoGrid>
 
-        {/* Recent Activity */}
-        <Grid container spacing={3}>
-          {/* Recent Ideas */}
-          <Grid item xs={12} md={6}>
-            <Card
-              sx={{
-                background: 'rgba(255, 255, 255, 0.95)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: 3,
-                height: '100%',
-              }}
-            >
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    💡 Latest Ideas
-                  </Typography>
-                  <IconButton
-                    size="small"
-                    onClick={() => navigate('/ideas')}
-                    sx={{
-                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                      color: 'white',
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                        transform: 'scale(1.1)',
-                      },
-                    }}
-                  >
-                    <Add />
-                  </IconButton>
+        {/* Recent activity */}
+        <BentoGrid>
+          <Card sx={{ gridColumn: { xs: 'span 12', md: 'span 6' }, p: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h6">💡 Latest Ideas</Typography>
+              <IconButton size="small" color="success" onClick={() => navigate('/ideas')} sx={{ bgcolor: 'success.main', color: '#fff', '&:hover': { bgcolor: 'success.dark' } }}>
+                <Add />
+              </IconButton>
+            </Box>
+            {ideas?.data?.slice(0, 3).map((idea) => (
+              <Box key={idea.id} sx={{ mb: 3, pb: 2, borderBottom: 1, borderColor: 'divider' }}>
+                <Typography variant="body1" gutterBottom sx={{ fontWeight: 500 }}>
+                  {idea.title}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
+                  <Chip label={idea.category} size="small" color="secondary" />
+                  <Chip label={idea.status} size="small" color={idea.status === 'approved' ? 'success' : 'default'} />
                 </Box>
-                {ideas?.data?.slice(0, 3).map((idea) => (
-                  <Box key={idea.id} sx={{ mb: 3, pb: 2, borderBottom: '1px solid rgba(0,0,0,0.1)' }}>
-                    <Typography variant="body1" gutterBottom sx={{ fontWeight: 500 }}>
-                      {idea.title}
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
-                      <Chip 
-                        label={idea.category} 
-                        size="small" 
-                        sx={{ 
-                          background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                          color: 'white',
-                          fontWeight: 500,
-                        }}
-                      />
-                      <Chip 
-                        label={idea.status} 
-                        size="small" 
-                        color={idea.status === 'approved' ? 'success' : 'default'}
-                        sx={{ fontWeight: 500 }}
-                      />
-                    </Box>
-                    <Typography variant="caption" color="text.secondary">
-                      by {idea.author?.full_name || idea.author?.username}
-                    </Typography>
-                  </Box>
-                ))}
-                <Button
-                  fullWidth
-                  endIcon={<ArrowForward />}
-                  onClick={() => navigate('/ideas')}
-                  sx={{
-                    mt: 2,
-                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                    color: 'white',
-                    borderRadius: 2,
-                    py: 1,
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                    },
-                  }}
-                >
-                  View All Ideas
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
+                <Typography variant="caption" color="text.secondary">
+                  by {idea.author?.full_name || idea.author?.username}
+                </Typography>
+              </Box>
+            ))}
+            <Button fullWidth variant="contained" color="success" endIcon={<ArrowForward />} onClick={() => navigate('/ideas')}>
+              View All Ideas
+            </Button>
+          </Card>
 
-          {/* Active Alerts */}
-          <Grid item xs={12} md={6}>
-            <Card
-              sx={{
-                background: 'rgba(255, 255, 255, 0.95)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: 3,
-                height: '100%',
-              }}
-            >
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    🚨 Safety Updates
-                  </Typography>
-                  <IconButton
+          <Card sx={{ gridColumn: { xs: 'span 12', md: 'span 6' }, p: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h6">🚨 Safety Updates</Typography>
+              <IconButton size="small" onClick={() => navigate('/alerts')} sx={{ bgcolor: 'error.main', color: '#fff', '&:hover': { bgcolor: 'error.dark' } }}>
+                <Add />
+              </IconButton>
+            </Box>
+            {activeAlerts?.data?.slice(0, 3).map((alert) => (
+              <Box key={alert.id} sx={{ mb: 3, pb: 2, borderBottom: 1, borderColor: 'divider' }}>
+                <Typography variant="body1" gutterBottom sx={{ fontWeight: 500 }}>
+                  {alert.title}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
+                  <Chip label={alert.alert_type.replace('_', ' ')} size="small" color="warning" />
+                  <Chip
+                    label={alert.severity}
                     size="small"
-                    onClick={() => navigate('/alerts')}
-                    sx={{
-                      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                      color: 'white',
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-                        transform: 'scale(1.1)',
-                      },
-                    }}
-                  >
-                    <Add />
-                  </IconButton>
+                    color={
+                      alert.severity === 'high' || alert.severity === 'critical'
+                        ? 'error'
+                        : alert.severity === 'medium'
+                        ? 'warning'
+                        : 'default'
+                    }
+                  />
                 </Box>
-                {activeAlerts?.data?.slice(0, 3).map((alert) => (
-                  <Box key={alert.id} sx={{ mb: 3, pb: 2, borderBottom: '1px solid rgba(0,0,0,0.1)' }}>
-                    <Typography variant="body1" gutterBottom sx={{ fontWeight: 500 }}>
-                      {alert.title}
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
-                      <Chip 
-                        label={alert.alert_type.replace('_', ' ')} 
-                        size="small" 
-                        sx={{
-                          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                          color: 'white',
-                          fontWeight: 500,
-                        }}
-                      />
-                      <Chip 
-                        label={alert.severity} 
-                        size="small" 
-                        color={
-                          alert.severity === 'high' || alert.severity === 'critical' 
-                            ? 'error' 
-                            : alert.severity === 'medium' 
-                            ? 'warning' 
-                            : 'default'
-                        }
-                        sx={{ fontWeight: 500 }}
-                      />
-                    </Box>
-                    <Typography variant="caption" color="text.secondary">
-                      📍 {alert.location}
-                    </Typography>
-                  </Box>
-                ))}
-                <Button
-                  fullWidth
-                  endIcon={<ArrowForward />}
-                  onClick={() => navigate('/alerts')}
-                  sx={{
-                    mt: 2,
-                    background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                    color: 'white',
-                    borderRadius: 2,
-                    py: 1,
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-                    },
-                  }}
-                >
-                  View All Alerts
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+                <Typography variant="caption" color="text.secondary">
+                  📍 {alert.location}
+                </Typography>
+              </Box>
+            ))}
+            <Button fullWidth variant="contained" color="error" endIcon={<ArrowForward />} onClick={() => navigate('/alerts')}>
+              View All Alerts
+            </Button>
+          </Card>
+        </BentoGrid>
       </Container>
     </Box>
   );

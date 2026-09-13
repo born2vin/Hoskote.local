@@ -45,9 +45,10 @@ const Profile = () => {
   };
 
   return (
+    <Box sx={{ minHeight: 'calc(100vh - 80px)', py: { xs: 3, md: 6 } }}>
     <Container component="main" maxWidth="md">
-      <Box sx={{ mt: 4 }}>
-        <Paper elevation={3} sx={{ p: 4 }}>
+      <Box className="page-enter">
+        <Paper elevation={0} sx={{ p: 4 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
             <Avatar 
               sx={{ 
@@ -122,6 +123,7 @@ const Profile = () => {
         </Paper>
       </Box>
     </Container>
+    </Box>
   );
 };
 

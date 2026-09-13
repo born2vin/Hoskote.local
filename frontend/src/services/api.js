@@ -42,18 +42,6 @@ export const marketplaceApi = {
   delete: (id) => api.delete(`/api/marketplace/${id}`),
 };
 
-// Expenses API
-export const expensesApi = {
-  getAll: (params = {}) => api.get('/api/expenses/', { params }),
-  getMySplits: () => api.get('/api/expenses/my-splits'),
-  getPendingPayments: () => api.get('/api/expenses/pending-payments'),
-  getById: (id) => api.get(`/api/expenses/${id}`),
-  create: (data) => api.post('/api/expenses/', data),
-  update: (id, data) => api.put(`/api/expenses/${id}`, data),
-  pay: (id, amount) => api.post(`/api/expenses/${id}/pay?amount=${amount}`),
-  delete: (id) => api.delete(`/api/expenses/${id}`),
-};
-
 // Users API
 export const usersApi = {
   getAll: (params = {}) => api.get('/api/users/', { params }),
@@ -74,14 +62,4 @@ export const budgetingApi = {
   create: (data) => api.post('/api/budgeting/', data),
   update: (id, data) => api.put(`/api/budgeting/${id}`, data),
   delete: (id) => api.delete(`/api/budgeting/${id}`),
-};
-
-// Maintenance Payments API
-export const maintenanceApi = {
-  getAll: (params = {}) => api.get('/api/maintenance/', { params }),
-  getById: (id) => api.get(`/api/maintenance/${id}`),
-  create: (formData) => api.post('/api/maintenance/', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  }),
-  update: (id, data) => api.put(`/api/maintenance/${id}`, data),
 };

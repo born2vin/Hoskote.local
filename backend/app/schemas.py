@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, validator, model_validator
+from pydantic import BaseModel, EmailStr, validator, model_validator, field_validator
 from datetime import datetime
 from typing import Optional, List
 from enum import Enum
@@ -248,6 +248,13 @@ class BudgetTransactionBase(BaseModel):
     resident_name: Optional[str] = None
     transaction_date: Optional[datetime] = None
 
+    @field_validator('transaction_date', mode='before')
+    @classmethod
+    def parse_transaction_date(cls, value):
+        if isinstance(value, str) and len(value) == 10:
+            return datetime.strptime(value, '%Y-%m-%d')
+        return value
+
     @model_validator(mode="after")
     def validate_transaction_fields(self):
         if self.transaction_type == "Income":
@@ -256,7 +263,6 @@ class BudgetTransactionBase(BaseModel):
             if not self.resident_name:
                 raise ValueError("resident_name is required for income (maintenance) transactions")
         elif self.transaction_type == "Expense":
-            # Expense transactions ignore villa_number and resident_name
             self.villa_number = None
             self.resident_name = None
         return self
@@ -272,6 +278,25 @@ class BudgetTransactionUpdate(BaseModel):
     villa_number: Optional[str] = None
     resident_name: Optional[str] = None
     transaction_date: Optional[datetime] = None
+
+    @field_validator('transaction_date', mode='before')
+    @classmethod
+    def parse_transaction_date(cls, value):
+        if isinstance(value, str) and len(value) == 10:
+            return datetime.strptime(value, '%Y-%m-%d')
+        return value
+
+    @model_validator(mode="after")
+    def validate_transaction_fields(self):
+        if self.transaction_type == "Income":
+            if not self.villa_number:
+                raise ValueError("villa_number is required for income (maintenance) transactions")
+            if not self.resident_name:
+                raise ValueError("resident_name is required for income (maintenance) transactions")
+        elif self.transaction_type == "Expense":
+            self.villa_number = None
+            self.resident_name = None
+        return self
 
 class BudgetTransaction(BudgetTransactionBase):
     id: int

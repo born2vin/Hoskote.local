@@ -6,9 +6,9 @@ import {
   MenuItem,
   Tooltip,
   Typography,
-  Box,
   Fade
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import {
   Language as LanguageIcon,
   Check as CheckIcon
@@ -38,31 +38,11 @@ const LanguageSelector = () => {
     handleClose();
   };
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
-
   return (
     <>
       <Tooltip title={t('languageSelector.selectLanguage')} placement="bottom">
-        <IconButton
-          onClick={handleClick}
-          sx={{
-            background: 'rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            color: 'white',
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              background: 'rgba(255, 255, 255, 0.2)',
-              transform: 'translateY(-2px)',
-            }
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <LanguageIcon fontSize="small" />
-            <Typography variant="caption" sx={{ fontSize: '1.2em' }}>
-              {currentLanguage.flag}
-            </Typography>
-          </Box>
+        <IconButton onClick={handleClick} sx={{ color: 'text.secondary' }}>
+          <LanguageIcon />
         </IconButton>
       </Tooltip>
       
@@ -80,15 +60,14 @@ const LanguageSelector = () => {
           horizontal: 'right',
         }}
         PaperProps={{
-          sx: {
-            background: 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            borderRadius: 2,
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+          sx: (theme) => ({
+            background: theme.vars.palette.custom.glassStrong,
+            backdropFilter: 'blur(20px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+            border: `1px solid ${theme.vars.palette.custom.glassBorder}`,
             minWidth: 200,
-            mt: 1
-          }
+            mt: 1,
+          }),
         }}
       >
         {languages.map((language) => (
@@ -96,23 +75,23 @@ const LanguageSelector = () => {
             key={language.code}
             onClick={() => handleLanguageChange(language.code)}
             selected={i18n.language === language.code}
-            sx={{
+            sx={(theme) => ({
               display: 'flex',
               alignItems: 'center',
               gap: 1.5,
               py: 1.5,
               px: 2,
-              transition: 'all 0.2s ease',
+              transition: 'background-color 0.2s ease',
               '&:hover': {
-                background: 'rgba(103, 58, 183, 0.1)',
+                backgroundColor: alpha(theme.palette.secondary.main, 0.1),
               },
               '&.Mui-selected': {
-                background: 'rgba(103, 58, 183, 0.15)',
+                backgroundColor: alpha(theme.palette.secondary.main, 0.15),
                 '&:hover': {
-                  background: 'rgba(103, 58, 183, 0.2)',
-                }
-              }
-            }}
+                  backgroundColor: alpha(theme.palette.secondary.main, 0.2),
+                },
+              },
+            })}
           >
             <Typography sx={{ fontSize: '1.2em' }}>
               {language.flag}

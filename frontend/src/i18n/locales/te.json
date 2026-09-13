@@ -45,21 +45,23 @@
     "budgeting": "బజెట్",
     "notifications": "నోటిఫికేషన్‌లు",
     "profileSettings": "ప్రొఫైల్ సెట్టింగ్‌లు",
-    "signedInAs": "ఇలా సైన్ ఇన్ అయ్యారు"
+    "signedInAs": "ఇలా సైన్ ఇన్ అయ్యారు",
+    "lightMode": "లైట్ మోడ్‌కి మార్చండి",
+    "darkMode": "డార్క్ మోడ్‌కి మార్చండి"
   },
   "auth": {
     "welcomeBack": "తిరిగి స్వాగతం",
     "signInToAccount": "మీ  సుప్రా ఎన్క్లేవ్ కమ్యూనిటీ హబ్ ఖాతాకు సైన్ ఇన్ చేయండి",
     "joinCommunityHub": "సుప్రా ఎన్క్లేవ్ కమ్యూనిటీ హబ్‌లో చేరండి",
-    "createAccount": "ప్రారంభించడానికి మీ ఖాతాను సృష్టించಂడಿ",
-    "username": "వಿನಿಯೋಗದಾರು ಪೇರು",
-    "email": "ಈಮೆಲ್ ಚಿರುನಾಮಾ",
-    "password": "ಪಾಸ್‌ವರ್ಡ್",
-    "confirmPassword": "ಪಾಸ್‌ವರ್ಡ್‌ನು ನಿರ್ದಿಶನಿಸಂಡಿ",
-    "fullName": "ಪೂರ್ತಿ ಪೇರು",
-    "phoneNumber": "ಫೋನ್ ನಂಬರ್",
-    "address": "ಚಿರುನಾಮಾ",
-    "signingIn": "ಸೈನ್ ಇನ್ ಅವುತೋಂದಿ...",
+    "createAccount": "ప్రారంభించడానికి మీ ఖాతాను సృష్టించండి",
+    "username": "వినియోగదారు పేరు",
+    "email": "ఈమెయిల్ చిరునామా",
+    "password": "పాస్‌వర్డ్",
+    "confirmPassword": "పాస్‌వర్డ్‌ను ధృవీకరించండి",
+    "fullName": "పూర్తి పేరు",
+    "phoneNumber": "ఫోన్ నంబర్",
+    "address": "చిరునామా",
+    "signingIn": "సైన్ ఇన్ అవుతోంది...",
     "creatingAccount": "ఖాతా సృష్టించబడుతోంది...",
     "dontHaveAccount": "ఖాతా లేదా?",
     "alreadyHaveAccount": "ఇప్పటికే ఖాతా ఉందా?",
@@ -73,7 +75,8 @@
     "invalidEmail": "చెల్లని ఈమెయిల్ చిరునామా",
     "passwordMinLength": "పాస్‌వర్డ్ కనీసం 6 అక్షరాలు ఉండాలి",
     "passwordsDoNotMatch": "పాస్‌వర్డ్‌లు సరిపోలడం లేదు",
-    "usernameMinLength": "వినియోగదారు పేరు కనీసం 3 అక్షరాలు ఉండాలి"
+    "usernameMinLength": "వినియోగదారు పేరు కనీసం 3 అక్షరాలు ఉండాలి",
+    "confirmPasswordRequired": "పాస్‌వర్డ్ ధృవీకరణ అవసరం"
   },
   "dashboard": {
     "welcomeBack": "తిరిగి స్వాగతం, {{name}}! 👋",

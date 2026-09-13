@@ -45,7 +45,9 @@
     "budgeting": "Budgeting",
     "notifications": "Notifications",
     "profileSettings": "Profile Settings",
-    "signedInAs": "Signed in as"
+    "signedInAs": "Signed in as",
+    "lightMode": "Switch to light mode",
+    "darkMode": "Switch to dark mode"
   },
   "auth": {
     "welcomeBack": "Welcome Back",
@@ -73,7 +75,8 @@
     "invalidEmail": "Invalid email address",
     "passwordMinLength": "Password must be at least 6 characters",
     "passwordsDoNotMatch": "Passwords do not match",
-    "usernameMinLength": "Username must be at least 3 characters"
+    "usernameMinLength": "Username must be at least 3 characters",
+    "confirmPasswordRequired": "Please confirm your password"
   },
   "dashboard": {
     "welcomeBack": "Welcome back, {{name}}! 👋",

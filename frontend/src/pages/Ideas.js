@@ -39,6 +39,7 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { ideasApi } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { format } from 'date-fns';
+import PageHeader from '../components/PageHeader';
 
 const Ideas = () => {
   const [open, setOpen] = useState(false);
@@ -154,109 +155,55 @@ const Ideas = () => {
       py: 3,
     }}>
       <Container maxWidth="lg">
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-          <Box>
-            <Typography 
-              variant="h3" 
-              sx={{ 
-                fontWeight: 700,
-                color: 'white',
-                textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                mb: 1,
-              }}
-            >
-              💡 Community Ideas
-            </Typography>
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                color: 'rgba(255, 255, 255, 0.9)',
-                fontWeight: 400,
-              }}
-            >
-              Share your vision for a better community
-            </Typography>
-          </Box>
-          <Button
-            variant="contained"
-            startIcon={<Add />}
-            onClick={() => setOpen(true)}
-            sx={{
-              background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-              borderRadius: 3,
-              px: 3,
-              py: 1.5,
-              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-              '&:hover': {
-                background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-                transform: 'translateY(-2px)',
-                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
-              },
-            }}
-          >
-            Share Idea
-          </Button>
-        </Box>
+        <PageHeader
+          icon="💡"
+          title="Community Ideas"
+          subtitle="Share your vision for a better community"
+          action={
+            <Button variant="contained" startIcon={<Add />} onClick={() => setOpen(true)} sx={{ px: 3, py: 1.5 }}>
+              Share Idea
+            </Button>
+          }
+        />
 
-        <Box sx={{ 
-          background: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          borderRadius: 3,
-          mb: 3,
-        }}>
-          <Tabs 
-            value={tab} 
-            onChange={(e, newValue) => setTab(newValue)} 
-            sx={{ 
-              px: 2,
-              '& .MuiTab-root': {
-                fontWeight: 600,
-                fontSize: '0.95rem',
-              },
-            }}
+        <Card sx={{ mb: 3 }}>
+          <Tabs
+            value={tab}
+            onChange={(e, newValue) => setTab(newValue)}
+            sx={{ px: 2 }}
           >
             <Tab label="All Ideas" />
             <Tab label="Pending" />
             <Tab label="Approved" />
             <Tab label="My Ideas" />
           </Tabs>
-        </Box>
+        </Card>
 
         <Grid container spacing={3}>
           {isLoading ? (
             <Grid item xs={12}>
               <Box sx={{ textAlign: 'center', py: 8 }}>
-                <Box className="loading-spinner" sx={{ 
-                  width: 40, 
-                  height: 40, 
-                  border: '4px solid rgba(255,255,255,0.3)',
-                  borderTop: '4px solid white',
-                  borderRadius: '50%',
-                  mx: 'auto',
-                  mb: 2,
-                }} />
-                <Typography sx={{ color: 'white' }}>Loading ideas...</Typography>
+                <Box
+                  className="loading-spinner"
+                  sx={(t) => ({
+                    width: 40,
+                    height: 40,
+                    border: `4px solid ${t.vars.palette.custom.shellTextMuted}`,
+                    borderTopColor: t.vars.palette.custom.shellText,
+                    borderRadius: '50%',
+                    mx: 'auto',
+                    mb: 2,
+                    opacity: 0.4,
+                  })}
+                />
+                <Typography sx={(t) => ({ color: t.vars.palette.custom.shellText })}>Loading ideas...</Typography>
               </Box>
             </Grid>
           ) : (
             filteredIdeas?.map((idea, index) => (
               <Grid item xs={12} md={6} lg={4} key={idea.id}>
                 <Fade in={true} timeout={300 + index * 100}>
-                  <Card 
-                    sx={{ 
-                      height: '100%',
-                      background: 'rgba(255, 255, 255, 0.95)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      borderRadius: 3,
-                      transition: 'all 0.3s ease-in-out',
-                      '&:hover': {
-                        transform: 'translateY(-8px)',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                      },
-                    }}
-                  >
+                  <Card sx={{ height: '100%', '&:hover': { transform: 'translateY(-6px)' } }}>
                     <CardContent sx={{ p: 3 }}>
                       {/* Category Badge */}
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
@@ -404,19 +351,11 @@ const Ideas = () => {
         </Grid>
 
         {/* Create Idea Dialog */}
-        <Dialog 
-          open={open} 
-          onClose={() => setOpen(false)} 
-          maxWidth="sm" 
+        <Dialog
+          open={open}
+          onClose={() => setOpen(false)}
+          maxWidth="sm"
           fullWidth
-          PaperProps={{
-            sx: {
-              background: 'rgba(255, 255, 255, 0.95)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: 3,
-            },
-          }}
         >
           <DialogTitle sx={{ 
             pb: 1,

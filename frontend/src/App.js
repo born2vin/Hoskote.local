@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Box } from '@mui/material';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
@@ -16,29 +16,32 @@ import './i18n/i18n';
 
 function ProtectedRoute({ children, allowedRoles }) {
   const { user, loading } = useAuth();
-  
+
   if (loading) {
     return (
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
+      <Box
+        sx={(t) => ({
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
           height: '100vh',
-          background: 'linear-gradient(135deg, #244855 0%, #90aead 100%)',
-        }}
+          background: t.vars.palette.custom.shellGradient,
+        })}
       >
-        <Box className="loading-spinner" sx={{ 
-          width: 40, 
-          height: 40, 
-          border: '4px solid rgba(255,255,255,0.3)',
-          borderTop: '4px solid white',
-          borderRadius: '50%',
-        }} />
+        <Box
+          className="loading-spinner"
+          sx={(t) => ({
+            width: 40,
+            height: 40,
+            border: `4px solid ${t.vars.palette.divider}`,
+            borderTop: `4px solid ${t.vars.palette.primary.main}`,
+            borderRadius: '50%',
+          })}
+        />
       </Box>
     );
   }
-  
+
   if (!user) return <Navigate to="/login" />;
   if (allowedRoles && !allowedRoles.includes(user.role)) return <Navigate to="/dashboard" />;
   return children;
@@ -46,20 +49,24 @@ function ProtectedRoute({ children, allowedRoles }) {
 
 function AppContent() {
   const { user } = useAuth();
+  const location = useLocation();
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      minHeight: '100vh',
-      background: user ? 'linear-gradient(135deg, #244855 0%, #90aead 100%)' : 'transparent',
-    }}>
+    <Box
+      sx={(t) => ({
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        background: user ? t.vars.palette.custom.shellGradient : 'transparent',
+      })}
+    >
       {user && <Navbar />}
-      <Box 
-        component="main" 
-        sx={{ 
+      <Box
+        component="main"
+        key={location.pathname}
+        className="page-enter"
+        sx={{
           flexGrow: 1,
-          overflow: 'hidden',
         }}
       >
         <Routes>
