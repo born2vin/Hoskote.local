@@ -1,274 +1,228 @@
-# Community Hub
+# Supra Enclave Community Hub
 
-A comprehensive community platform that enables residents to connect, collaborate, and improve their neighborhood through idea sharing, safety alerts, item lending, and expense splitting.
+A residential community platform for a small housing enclave — residents share ideas, report safety
+alerts, lend/borrow items, log maintenance issues, and (for admins) track shared income/expenses,
+all behind proper authentication with role-based access control.
+
+**Live**: backend at `https://supra-enclave-community-hub.onrender.com` (API docs at `/docs`),
+frontend at `https://supra-enclave-community.onrender.com`.
 
 ## Features
 
-### 🎯 **Ideas Hub**
-- Propose ideas for community betterment
-- Vote on community proposals
-- Track idea status (pending, approved, implemented)
-- Categories: Environment, Education, Health, Infrastructure, Safety, Technology, Social, Economic
+- **Ideas Hub** — propose, browse, and vote on community improvement ideas. Admins approve/reject.
+- **Safety Alerts** — report incidents with location and severity; authors resolve their own alerts.
+- **Marketplace** — lend and borrow items with other residents, with per-day pricing and duration limits.
+- **Issues** — report maintenance problems (electricity, water supply, gardening, etc.); admins update status.
+- **Budgeting** (Admin / Delegated Admin only) — track community income and expenses in one unified ledger.
+- **Profile** — view/update your name, phone, address; villa number is shown (set at registration).
+- **Auth** — register, login, forgot/reset password (emailed time-limited link), all JWT-based.
+- **Internationalization** — English, Kannada (ಕನ್ನಡ), and Telugu (తెలుగు); see
+  [INTERNATIONALIZATION_GUIDE.md](INTERNATIONALIZATION_GUIDE.md) for how translations are organized and
+  which pages are fully covered.
+- **Light/dark theme** — auto-follows system preference, with a manual toggle.
 
-### 🚨 **Safety Alerts**
-- Report theft, robbery, and safety concerns
-- Real-time incident notifications
-- Location-based alerts
-- Severity levels (low, medium, high, critical)
-- Alert resolution tracking
+## Tech Stack
 
-### 🏪 **Community Marketplace**
-- Lend and borrow items within the community
-- Item categories: Electronics, Books, Tools, Furniture, Sports, etc.
-- Rental pricing and duration limits
-- Availability tracking and return management
-- Item condition ratings
+**Backend**: FastAPI, SQLAlchemy 1.4 (ORM), Pydantic v2 (validation), `python-jose` (JWT), `bcrypt`
+(password hashing), SQLite for local dev / PostgreSQL in production (`psycopg2-binary`), `smtplib` for
+transactional email.
 
-### 💰 **Expense Splitting**
-- Create and manage community expenses
-- Equal or custom split options
-- Payment tracking and notifications
-- Categories: Maintenance, Utilities, Events, Security, etc.
-- Due date management and settlement tracking
+**Frontend**: React 18, Material UI v5, React Router v7, React Query (server state), React Hook Form
+(forms + validation), `react-i18next` (translations).
 
-## Technology Stack
+## Project Structure
 
-### Backend
-- **Framework**: FastAPI (Python)
-- **Database**: SQLite (easily replaceable with PostgreSQL/MySQL)
-- **Authentication**: JWT tokens with bcrypt password hashing
-- **API Documentation**: Automatic OpenAPI/Swagger documentation
-- **ORM**: SQLAlchemy
+```
+.
+├── backend/
+│   ├── main.py                    # FastAPI app, CORS, router registration
+│   ├── requirements.txt
+│   └── app/
+│       ├── database.py            # SQLAlchemy engine/session (reads DATABASE_URL)
+│       ├── models.py               # ORM models (User, Idea, Alert, MarketplaceItem, Issue,
+│       │                           #   BudgetTransaction, PasswordResetToken, ...)
+│       ├── schemas.py              # Pydantic request/response schemas
+│       ├── auth.py                 # JWT creation/verification, password hashing, role checks
+│       ├── email_utils.py          # Password reset email template + SMTP dispatch
+│       └── routers/                # One file per feature area, mounted under /api/<name>
+│           ├── auth.py             # register, login, login-json, forgot/reset-password, check-villa
+│           ├── users.py            # profile read/update, user listing
+│           ├── ideas.py
+│           ├── alerts.py
+│           ├── marketplace.py
+│           ├── issues.py
+│           └── budgeting.py
+├── frontend/
+│   └── src/
+│       ├── App.js                  # Route table
+│       ├── components/             # Navbar, LanguageSelector, AuthLayout, PageHeader
+│       ├── contexts/AuthContext.js # Login/logout, token storage, current user
+│       ├── pages/                  # One component per route
+│       ├── services/api.js         # Axios instance + grouped API call helpers
+│       ├── theme/theme.js          # MUI theme (light/dark tokens)
+│       └── i18n/                   # i18next config + locale JSON files
+├── start_dev.sh / start_dev.ps1     # One-command local dev startup (macOS/Linux and Windows)
+└── INTERNATIONALIZATION_GUIDE.md
+```
 
-### Frontend
-- **Framework**: React 18
-- **UI Library**: Material-UI (MUI)
-- **State Management**: React Query for server state
-- **Routing**: React Router v6
-- **Forms**: React Hook Form
-- **Styling**: Emotion (CSS-in-JS)
+Two backend router files (`expenses.py`, `maintenance.py`) and two frontend pages
+(`Expenses.js`, `MaintenancePayments.js`) still exist on disk but are **not wired into the app** —
+they predate the unified Budgeting feature and are dead code kept only because they couldn't be
+deleted in this environment. Don't extend them; they reference a DB relationship
+(`Expense.participants`) that no longer exists and will crash if re-registered.
 
-## Installation & Setup
+## User Roles & Permissions
+
+The `role` column is a plain string with no DB-level enum — checks are exact, **case-sensitive**
+string comparisons in both the backend and frontend. Only these three values mean anything to the code:
+
+| Role | Granted by | Access |
+|---|---|---|
+| `Resident` | Default for every self-registration | Standard access: Ideas, Alerts, Marketplace, Issues, own Profile |
+| `Admin` | Direct DB update only (no in-app UI for this) | Everything a Resident has, plus: create/update/delete Budgeting transactions, approve/reject Ideas, update Issue status |
+| `Delegated Admin` | Direct DB update only | Identical permissions to `Admin` — the two are treated as fully equivalent everywhere in the code |
+
+To promote a user, connect to the database (see **Database access** below) and run:
+```sql
+UPDATE users SET role = 'Admin' WHERE username = 'someuser';
+```
+Any other string (including different casing like `admin`) is accepted by the column but grants no
+special access — it behaves identically to `Resident`.
+
+## Getting Started (Local Development)
 
 ### Prerequisites
-- Python 3.8+
-- Node.js 14+
-- npm or yarn
+- Python 3.11 (the pinned `sqlalchemy==1.4.49` has known friction on 3.12+)
+- Node.js 18+
+- npm
 
-### Backend Setup
+### Quick start
+```bash
+# macOS/Linux
+./start_dev.sh
 
-1. **Navigate to backend directory**
-   ```bash
-   cd backend
-   ```
-
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Run the application**
-   ```bash
-   python main.py
-   ```
-
-The backend will start on `http://localhost:8000`
-
-- API Documentation: `http://localhost:8000/docs`
-- Alternative Docs: `http://localhost:8000/redoc`
-
-### Frontend Setup
-
-1. **Navigate to frontend directory**
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Start development server**
-   ```bash
-   npm start
-   ```
-
-The frontend will start on `http://localhost:3000`
-
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/login-json` - Login with JSON payload
-
-### Users
-- `GET /api/users/me` - Get current user profile
-- `PUT /api/users/me` - Update user profile
-- `GET /api/users/` - List all users
-- `GET /api/users/{id}` - Get user by ID
-
-### Ideas
-- `GET /api/ideas/` - List ideas (with filters)
-- `POST /api/ideas/` - Create new idea
-- `GET /api/ideas/{id}` - Get idea details
-- `PUT /api/ideas/{id}` - Update idea
-- `DELETE /api/ideas/{id}` - Delete idea
-- `POST /api/ideas/{id}/vote` - Vote on idea
-
-### Alerts
-- `GET /api/alerts/` - List alerts (with filters)
-- `GET /api/alerts/active` - Get active alerts only
-- `POST /api/alerts/` - Create new alert
-- `GET /api/alerts/{id}` - Get alert details
-- `PUT /api/alerts/{id}` - Update alert
-- `POST /api/alerts/{id}/resolve` - Mark alert as resolved
-- `DELETE /api/alerts/{id}` - Delete alert
-
-### Marketplace
-- `GET /api/marketplace/` - List marketplace items
-- `GET /api/marketplace/my-items` - Get user's items
-- `GET /api/marketplace/borrowed` - Get borrowed items
-- `POST /api/marketplace/` - Create new item
-- `GET /api/marketplace/{id}` - Get item details
-- `PUT /api/marketplace/{id}` - Update item
-- `POST /api/marketplace/{id}/borrow` - Borrow item
-- `POST /api/marketplace/{id}/return` - Return item
-- `DELETE /api/marketplace/{id}` - Delete item
-
-### Expenses
-- `GET /api/expenses/` - List expenses
-- `GET /api/expenses/my-splits` - Get user's expense splits
-- `GET /api/expenses/pending-payments` - Get pending payments
-- `POST /api/expenses/` - Create new expense
-- `GET /api/expenses/{id}` - Get expense details
-- `PUT /api/expenses/{id}` - Update expense
-- `POST /api/expenses/{id}/pay` - Make payment
-- `DELETE /api/expenses/{id}` - Delete expense
-
-## Database Schema
-
-### Core Models
-
-- **User**: User profiles and authentication
-- **Idea**: Community improvement proposals
-- **Alert**: Safety and security alerts
-- **MarketplaceItem**: Items for lending/borrowing
-- **Expense**: Community expenses
-- **ExpenseSplit**: Individual expense portions
-
-### Key Relationships
-
-- Users can create multiple ideas, alerts, marketplace items, and expenses
-- Ideas have voting functionality
-- Marketplace items track current borrower and return dates
-- Expenses are split among multiple participants
-- All models include timestamp tracking
-
-## Usage Guide
-
-### Getting Started
-
-1. **Register/Login**: Create an account or sign in
-2. **Complete Profile**: Add your contact information and address
-3. **Explore Features**: Navigate through the different sections
-
-### Ideas Hub
-- Click "Share Idea" to propose improvements
-- Browse and vote on existing ideas
-- Filter by category or status
-- Track implementation progress
-
-### Safety Alerts
-- Report incidents with "Report Alert" button
-- Include location, severity, and description
-- Monitor community safety status
-- Resolve alerts when situations improve
-
-### Marketplace
-- Add items you want to lend with "Add Item"
-- Browse available items to borrow
-- Set rental prices and duration limits
-- Track borrowed items and return dates
-
-### Expense Splitting
-- Create expenses with "Create Expense"
-- Add participants and set split type
-- Track payments and settlement status
-- Monitor pending payments
-
-## Security Features
-
-- JWT-based authentication
-- Password hashing with bcrypt
-- CORS protection
-- Input validation and sanitization
-- User authorization for resource access
-
-## Development
-
-### Project Structure
-
+# Windows (PowerShell)
+.\start_dev.ps1
 ```
-community-app/
-├── backend/
-│   ├── app/
-│   │   ├── models.py          # Database models
-│   │   ├── schemas.py         # Pydantic schemas
-│   │   ├── auth.py           # Authentication utilities
-│   │   ├── database.py       # Database configuration
-│   │   └── routers/          # API route handlers
-│   ├── main.py               # FastAPI application
-│   └── requirements.txt      # Python dependencies
-├── frontend/
-│   ├── src/
-│   │   ├── components/       # Reusable components
-│   │   ├── pages/           # Page components
-│   │   ├── contexts/        # React contexts
-│   │   ├── services/        # API services
-│   │   └── App.js           # Main application
-│   ├── package.json         # Node dependencies
-│   └── public/              # Static assets
-└── README.md
+Both scripts create the backend venv if missing, install dependencies, start the FastAPI server on
+port 8000, install frontend dependencies, and start the React dev server on port 3000. They also set
+a **local-only placeholder** `SECRET_KEY` if you haven't set your own, since the backend refuses to
+start without one (see **Security Notes**).
+
+### Manual setup
+```bash
+# Backend
+cd backend
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+export SECRET_KEY="some-local-dev-value"   # Windows: $env:SECRET_KEY = "..."
+python main.py                  # http://localhost:8000, docs at /docs
+
+# Frontend (separate terminal)
+cd frontend
+npm install
+npm start                       # http://localhost:3000
 ```
 
-### Contributing
+Local dev uses a SQLite file (`backend/community_app.db`) by default — no database setup needed.
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+## Environment Variables
+
+### Backend
+
+| Variable | Required | Default | Purpose |
+|---|---|---|---|
+| `SECRET_KEY` | **Yes** | none — app refuses to start without it | Signs JWT access tokens |
+| `DATABASE_URL` | No | `sqlite:///./community_app.db` | SQLAlchemy connection string; set to a `postgresql://...` URL in production |
+| `CORS_ORIGINS` | No | `http://localhost:3000` | Comma-separated list of allowed frontend origins |
+| `FRONTEND_URL` | No | `http://localhost:3000` | Used to build the link inside password reset emails |
+| `SMTP_HOST` | No | none — logs the reset link instead of emailing | SMTP relay host for password reset emails |
+| `SMTP_PORT` | No | `587` | SMTP port (use an alternate port like `2525` on hosts that block 25/465/587, e.g. Render) |
+| `SMTP_USERNAME` | No | none | SMTP auth username |
+| `SMTP_PASSWORD` | No | none | SMTP auth password/API key |
+| `SMTP_FROM_EMAIL` | No | falls back to `SMTP_USERNAME` | Must be a sender/domain verified with your SMTP provider |
+| `SMTP_FROM_NAME` | No | `Supra Enclave Community Hub` | Display name on outgoing email |
+
+### Frontend
+
+| Variable | Required | Default | Purpose |
+|---|---|---|---|
+| `REACT_APP_API_URL` | No | `http://localhost:8000` | Backend base URL — must be set at **build time** (CRA bakes it into the static bundle) |
+
+## API Reference
+
+All routes except registration, login, forgot-password, reset-password, and check-villa require a
+`Bearer` JWT (`Authorization: Bearer <token>`), obtained from `/api/auth/login-json`.
+
+**Auth** (`/api/auth`)
+- `POST /register` — create an account (role always defaults to `Resident`, regardless of what's sent)
+- `POST /login` — OAuth2 form-encoded login, returns a JWT
+- `POST /login-json` — same, but JSON body `{username, password}`
+- `GET /check-villa/{villa_number}` — `{"exists": bool}`, used during registration
+- `POST /forgot-password` — `{email}`, always returns the same generic message (no account enumeration)
+- `POST /reset-password` — `{token, new_password}`; token is single-use and expires after 15 minutes
+
+**Users** (`/api/users`)
+- `GET /me`, `PUT /me` (full_name, phone, address only — **not** role or villa_number)
+- `GET /`, `GET /{id}`
+
+**Ideas** (`/api/ideas`) — CRUD + `POST /{id}/vote?vote_type=up|down` + `PATCH /{id}/status` (Admin only)
+
+**Alerts** (`/api/alerts`) — CRUD + `GET /active` + `POST /{id}/resolve` (author only)
+
+**Marketplace** (`/api/marketplace`) — CRUD + `GET /my-items`, `GET /borrowed`, `POST /{id}/borrow`,
+`POST /{id}/return`
+
+**Issues** (`/api/issues`) — `GET /`, `POST /`, `PATCH /{id}/status` (Admin only)
+
+**Budgeting** (`/api/budgeting`, Admin only for writes) — `GET /` (any authenticated user can read),
+`POST /`, `PUT /{id}`, `DELETE /{id}`
+
+Full interactive documentation (request/response schemas, try-it-out) is auto-generated by FastAPI at
+`/docs` on any running backend instance.
+
+## Security Notes
+
+- Passwords are hashed with `bcrypt`; JWTs are signed with `HS256` using `SECRET_KEY`, verified with an
+  explicit algorithm allowlist (prevents algorithm-confusion attacks).
+- Password reset tokens are generated with `secrets.token_urlsafe(32)`; only their **SHA-256 hash** is
+  stored, expire after 15 minutes, are single-use, and requesting a new one invalidates any earlier
+  unused token for that account. `/forgot-password` always returns an identical response whether or
+  not the email is registered.
+- `PUT /api/users/me` only accepts `full_name`, `phone`, `address` — it used to also accept `role`,
+  which let any authenticated user grant themselves Admin in one request. That's fixed; there is
+  currently **no API endpoint at all** for changing a user's role — it's DB-only (see **User Roles**).
+- There is **no rate limiting** on any endpoint, including login and forgot-password. Fine for a small
+  known community, but a real risk if this is ever exposed more broadly — consider adding `slowapi` or
+  similar before that happens.
+- Registration's password minimum (6 characters) is weaker than Reset Password's (8 characters, letter
+  + number required). Worth aligning if you revisit either.
 
 ## Deployment
 
-### Backend Deployment
-- Configure environment variables
-- Set up production database (PostgreSQL recommended)
-- Use WSGI server like Gunicorn
-- Set up reverse proxy (Nginx)
-- Configure SSL certificates
+Currently deployed on **Render**: the backend as a Web Service (`uvicorn main:app --host 0.0.0.0 --port
+$PORT`, Python 3.11, Postgres via `DATABASE_URL`), the frontend as a Render Static Site (`npm run
+build`, publish directory `build`, root directory `frontend`). Both are connected to this GitHub repo
+for auto-deploy on push to `main`.
 
-### Frontend Deployment
-- Build production bundle: `npm run build`
-- Deploy to static hosting (Netlify, Vercel, S3)
-- Configure environment variables for API URL
+To redeploy manually or set up a fresh environment, set the backend environment variables above in the
+Render dashboard, and `REACT_APP_API_URL` on the Static Site (rebuild required if it changes, since
+it's baked in at build time). `CORS_ORIGINS` on the backend must include the frontend's exact origin
+(no trailing slash) or every API call from the browser will fail with a CORS error.
+
+## Known Limitations
+
+- No Alembic migrations — schema changes apply via `Base.metadata.create_all()`, which creates missing
+  tables but never alters existing ones. A real schema change on a live database needs a manual `ALTER
+  TABLE` or introducing Alembic properly.
+- No rate limiting anywhere (see **Security Notes**).
+- No admin-only endpoint to change a user's role — direct DB access only.
+- `expenses.py`/`maintenance.py` (backend) and `Expenses.js`/`MaintenancePayments.js` (frontend) are
+  dead code left on disk (see **Project Structure**).
+- Several pages (Ideas, Alerts, Marketplace, Issues, Budgeting, Profile) are only partially translated —
+  see [INTERNATIONALIZATION_GUIDE.md](INTERNATIONALIZATION_GUIDE.md) for the current coverage status.
 
 ## License
 
-This project is open source and available under the MIT License.
-
-## Support
-
-For support, questions, or feature requests, please open an issue in the repository.
-
----
-
-**Community Hub** - Connecting neighbors, building stronger communities! 🏘️
+MIT.

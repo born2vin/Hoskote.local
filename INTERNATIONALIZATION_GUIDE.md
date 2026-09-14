@@ -49,7 +49,7 @@ frontend/src/
   "react-i18next": "^12.2.0",
   "i18next": "^22.4.15", 
   "i18next-browser-languagedetector": "^7.0.1",
-  "i18next-http-backend": "^2.2.0"
+  "i18next-http-backend": "^4.0.1"
 }
 ```
 
@@ -257,16 +257,24 @@ test('renders in Kannada', () => {
 - [x] i18next configuration and setup
 - [x] Language selector component with modern UI
 - [x] English, Kannada, and Telugu translation files
-- [x] Core authentication pages (Login, Register)
+- [x] Full authentication flow (Login, Register — including villa number field and its
+      validation messages, Forgot Password, Reset Password)
 - [x] Navigation and dashboard translations
 - [x] Language persistence and detection
 - [x] Form validation message translations
 
 ### 🔄 In Progress / Expandable
+Ideas, Alerts, Marketplace, Issues, and Budgeting all render correctly and are fully
+functional in every language, but most of their in-page copy (labels, buttons, list content
+beyond what's shown above) is still hardcoded English rather than routed through `t()`.
+Profile is the same — its "Update Profile," "Full Name," etc. labels are hardcoded. These are
+good candidates for whoever picks up i18n work next; the `auth.*` namespace in this session's
+work is a reference for the pattern (see **Usage Examples** above).
 - [ ] Complete Ideas page translations
 - [ ] Complete Alerts page translations  
 - [ ] Complete Marketplace page translations
-- [ ] Complete Expenses page translations
+- [ ] Complete Issues page translations
+- [ ] Complete Budgeting page translations
 - [ ] User profile and settings translations
 - [ ] Error message translations
 - [ ] Success notification translations
