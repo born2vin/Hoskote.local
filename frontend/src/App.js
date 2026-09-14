@@ -16,6 +16,7 @@ import Budgeting from './pages/Budgeting';
 import Profile from './pages/Profile';
 import Contacts from './pages/Contacts';
 import NoticeBoard from './pages/NoticeBoard';
+import useIsMobile from './hooks/useIsMobile';
 import './i18n/i18n';
 
 function ProtectedRoute({ children, allowedRoles }) {
@@ -54,6 +55,12 @@ function ProtectedRoute({ children, allowedRoles }) {
 function AppContent() {
   const { user } = useAuth();
   const location = useLocation();
+  const isMobile = useIsMobile();
+  // The bottom nav (rendered by Navbar below md-768) is fixed/sticky, so page
+  // content needs matching bottom padding or the last section of every page
+  // would render underneath it. env(safe-area-inset-bottom) covers the home
+  // indicator strip on notched iOS devices.
+  const bottomNavClearance = user && isMobile ? 'calc(56px + env(safe-area-inset-bottom))' : 0;
 
   return (
     <Box
@@ -71,6 +78,7 @@ function AppContent() {
         className="page-enter"
         sx={{
           flexGrow: 1,
+          pb: bottomNavClearance,
         }}
       >
         <Routes>

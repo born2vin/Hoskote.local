@@ -16,6 +16,9 @@ import {
   ListItemText,
   ListSubheader,
   Divider,
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
 } from '@mui/material';
 import {
   Dashboard,
@@ -32,6 +35,7 @@ import {
   Contacts as ContactsIcon,
   Campaign,
   HowToReg,
+  MoreHoriz,
 } from '@mui/icons-material';
 import { useColorScheme } from '@mui/material/styles';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -39,8 +43,13 @@ import { useQuery } from 'react-query';
 import { useAuth } from '../contexts/AuthContext';
 import { issuesApi, alertsApi, contactsApi } from '../services/api';
 import LanguageSelector from './LanguageSelector';
+import useIsMobile from '../hooks/useIsMobile';
 
 const NOTIFICATIONS_POLL_INTERVAL = 60 * 1000;
+// First N role-aware nav destinations get a permanent slot in the mobile
+// bottom bar; everything past that (Marketplace, Contacts, and the
+// Admin-only items) lives behind "More" so the bar never gets cramped.
+const BOTTOM_NAV_PRIMARY_COUNT = 4;
 
 const Navbar = () => {
   const { t } = useTranslation();
@@ -48,8 +57,10 @@ const Navbar = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const { mode, setMode } = useColorScheme();
+  const isMobile = useIsMobile();
   const [anchorEl, setAnchorEl] = useState(null);
   const [notifAnchorEl, setNotifAnchorEl] = useState(null);
+  const [moreAnchorEl, setMoreAnchorEl] = useState(null);
 
   const isAdmin = user?.role === 'Admin' || user?.role === 'Delegated Admin';
   const isDark = mode === 'dark';
@@ -129,6 +140,13 @@ const Navbar = () => {
     menuItems.push({ label: t('navbar.noticeBoard', 'Notice Board'), path: '/notices', icon: <Campaign /> });
   }
 
+  const primaryNavItems = menuItems.slice(0, BOTTOM_NAV_PRIMARY_COUNT);
+  const overflowNavItems = menuItems.slice(BOTTOM_NAV_PRIMARY_COUNT);
+  const isOverflowRouteActive = overflowNavItems.some((item) => item.path === location.pathname);
+  const bottomNavValue = isOverflowRouteActive
+    ? 'more'
+    : primaryNavItems.find((item) => item.path === location.pathname)?.path || false;
+
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -153,6 +171,19 @@ const Navbar = () => {
     navigate(path);
   };
 
+  const handleMoreOpen = (event) => {
+    setMoreAnchorEl(event.currentTarget);
+  };
+
+  const handleMoreClose = () => {
+    setMoreAnchorEl(null);
+  };
+
+  const handleMoreItemClick = (path) => {
+    handleMoreClose();
+    navigate(path);
+  };
+
   const handleLogout = () => {
     logout();
     handleMenuClose();
@@ -169,6 +200,7 @@ const Navbar = () => {
   };
 
   return (
+    <>
     <AppBar position="sticky" elevation={0}>
       <Toolbar sx={{ py: 1, gap: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, minWidth: 0 }}>
@@ -203,43 +235,53 @@ const Navbar = () => {
           </Typography>
         </Box>
 
-        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5, mr: 2 }}>
-          {menuItems.map((item) => {
-            const active = location.pathname === item.path;
-            return (
-              <Tooltip title={item.label} key={item.path}>
-                <Button
-                  color="inherit"
-                  startIcon={item.icon}
-                  onClick={() => navigate(item.path)}
-                  sx={{
-                    borderRadius: 999,
-                    px: 2,
-                    py: 1,
-                    color: active ? 'secondary.main' : 'text.secondary',
-                    backgroundColor: active ? 'rgba(99, 102, 241, 0.12)' : 'transparent',
-                    fontWeight: 600,
-                    fontSize: '0.875rem',
-                    boxShadow: 'none',
-                    '&:hover': {
-                      backgroundColor: 'rgba(99, 102, 241, 0.12)',
-                      color: 'secondary.main',
-                      transform: 'translateY(-1px)',
-                    },
-                  }}
-                >
-                  {item.label}
-                </Button>
-              </Tooltip>
-            );
-          })}
-        </Box>
+        {/* Desktop (>=768px): full icon + label row, unchanged from before. */}
+        {!isMobile && (
+          <Box sx={{ display: 'flex', gap: 0.5, mr: 2 }}>
+            {menuItems.map((item) => {
+              const active = location.pathname === item.path;
+              return (
+                <Tooltip title={item.label} key={item.path}>
+                  <Button
+                    color="inherit"
+                    startIcon={item.icon}
+                    onClick={() => navigate(item.path)}
+                    aria-label={item.label}
+                    aria-current={active ? 'page' : undefined}
+                    sx={{
+                      borderRadius: 999,
+                      px: 2,
+                      py: 1,
+                      color: active ? 'secondary.main' : 'text.secondary',
+                      backgroundColor: active ? 'rgba(99, 102, 241, 0.12)' : 'transparent',
+                      fontWeight: 600,
+                      fontSize: '0.875rem',
+                      boxShadow: 'none',
+                      '&:hover': {
+                        backgroundColor: 'rgba(99, 102, 241, 0.12)',
+                        color: 'secondary.main',
+                        transform: 'translateY(-1px)',
+                      },
+                    }}
+                  >
+                    {item.label}
+                  </Button>
+                </Tooltip>
+              );
+            })}
+          </Box>
+        )}
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <LanguageSelector />
 
           <Tooltip title={isDark ? t('navbar.lightMode', 'Switch to light mode') : t('navbar.darkMode', 'Switch to dark mode')}>
-            <IconButton size="medium" onClick={toggleColorMode} sx={{ color: 'text.secondary' }}>
+            <IconButton
+              size="medium"
+              onClick={toggleColorMode}
+              sx={{ color: 'text.secondary' }}
+              aria-label={isDark ? t('navbar.lightMode', 'Switch to light mode') : t('navbar.darkMode', 'Switch to dark mode')}
+            >
               {isDark ? <LightMode /> : <DarkMode />}
             </IconButton>
           </Tooltip>
@@ -251,6 +293,7 @@ const Navbar = () => {
               onClick={handleNotifOpen}
               aria-controls="menu-notifications"
               aria-haspopup="true"
+              aria-label={t('navbar.notifications')}
             >
               <Badge badgeContent={badgeCount} color="error">
                 <Notifications />
@@ -362,8 +405,122 @@ const Navbar = () => {
             {t('common.logout')}
           </MenuItem>
         </Menu>
+
+        {/* Overflow items that don't fit in the mobile bottom bar. */}
+        <Menu
+          id="menu-bottom-nav-more"
+          anchorEl={moreAnchorEl}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          open={Boolean(moreAnchorEl)}
+          onClose={handleMoreClose}
+          PaperProps={{ sx: { mb: 1, minWidth: 200 } }}
+        >
+          {overflowNavItems.map((item) => {
+            const active = location.pathname === item.path;
+            return (
+              <MenuItem
+                key={item.path}
+                selected={active}
+                onClick={() => handleMoreItemClick(item.path)}
+                aria-current={active ? 'page' : undefined}
+              >
+                <ListItemIcon sx={{ color: active ? 'secondary.main' : 'text.secondary' }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText primary={item.label} />
+              </MenuItem>
+            );
+          })}
+        </Menu>
       </Toolbar>
     </AppBar>
+
+    {/* Mobile (<768px): fixed icon-only bottom bar, replacing the top link row. */}
+    {isMobile && (
+      <Paper
+        elevation={0}
+        sx={(t) => ({
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: t.zIndex.appBar,
+          borderRadius: 0,
+          borderTop: `1px solid ${t.vars.palette.divider}`,
+          background: t.vars.palette.custom.navBg,
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          pb: 'env(safe-area-inset-bottom)',
+        })}
+      >
+        <BottomNavigation
+          value={bottomNavValue}
+          showLabels
+          sx={{ height: 56, background: 'transparent' }}
+        >
+          {primaryNavItems.map((item) => {
+            const active = location.pathname === item.path;
+            return (
+              <BottomNavigationAction
+                key={item.path}
+                value={item.path}
+                aria-label={item.label}
+                title={item.label}
+                onClick={() => navigate(item.path)}
+                icon={
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      p: 0.5,
+                      borderRadius: 2.5,
+                      backgroundColor: active ? 'rgba(99, 102, 241, 0.14)' : 'transparent',
+                    }}
+                  >
+                    {item.icon}
+                  </Box>
+                }
+                sx={{
+                  minWidth: 44,
+                  minHeight: 44,
+                  color: 'text.secondary',
+                  '&.Mui-selected': { color: 'secondary.main' },
+                  '& .MuiBottomNavigationAction-label': { display: 'none' },
+                }}
+              />
+            );
+          })}
+          {overflowNavItems.length > 0 && (
+            <BottomNavigationAction
+              value="more"
+              aria-label="More navigation options"
+              title="More"
+              onClick={handleMoreOpen}
+              icon={
+                <Box
+                  sx={{
+                    display: 'flex',
+                    p: 0.5,
+                    borderRadius: 2.5,
+                    backgroundColor: isOverflowRouteActive ? 'rgba(99, 102, 241, 0.14)' : 'transparent',
+                  }}
+                >
+                  <MoreHoriz />
+                </Box>
+              }
+              sx={{
+                minWidth: 44,
+                minHeight: 44,
+                color: 'text.secondary',
+                '&.Mui-selected': { color: 'secondary.main' },
+                '& .MuiBottomNavigationAction-label': { display: 'none' },
+              }}
+            />
+          )}
+        </BottomNavigation>
+      </Paper>
+    )}
+    </>
   );
 };
 
