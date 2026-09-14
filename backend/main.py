@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
 
-from app.routers import auth, ideas, alerts, marketplace, users, issues, budgeting
+from app.routers import auth, ideas, alerts, marketplace, users, issues, budgeting, notices, contacts
 from app.database import engine
 from app.models import Base
 
@@ -12,7 +12,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Supra Enclave Community App API",
-    description="A platform for ideas, safety, marketplace, and expense sharing",
+    description="A platform for ideas, safety, marketplace, and community engagement.",
     version="1.0.0"
 )
 
@@ -41,6 +41,8 @@ app.include_router(alerts.router, prefix="/api/alerts", tags=["alerts"])
 app.include_router(marketplace.router, prefix="/api/marketplace", tags=["marketplace"])
 app.include_router(issues.router, prefix="/api/issues", tags=["issues"])
 app.include_router(budgeting.router, prefix="/api/budgeting", tags=["budgeting"])
+app.include_router(notices.router, prefix="/api/notices", tags=["notices"])
+app.include_router(contacts.router, prefix="/api/contacts", tags=["contacts"])
 
 @app.get("/")
 async def root():

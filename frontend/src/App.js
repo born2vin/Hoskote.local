@@ -14,6 +14,8 @@ import Issues from './pages/Issues';
 import Marketplace from './pages/Marketplace';
 import Budgeting from './pages/Budgeting';
 import Profile from './pages/Profile';
+import Contacts from './pages/Contacts';
+import NoticeBoard from './pages/NoticeBoard';
 import './i18n/i18n';
 
 function ProtectedRoute({ children, allowedRoles }) {
@@ -82,6 +84,8 @@ function AppContent() {
           <Route path="/issues" element={<ProtectedRoute><Issues /></ProtectedRoute>} />
           <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
           <Route path="/budgeting" element={<ProtectedRoute allowedRoles={['Admin', 'Delegated Admin']}><Budgeting /></ProtectedRoute>} />
+          <Route path="/contacts" element={<ProtectedRoute><Contacts /></ProtectedRoute>} />
+          <Route path="/notices" element={<ProtectedRoute allowedRoles={['Admin', 'Delegated Admin']}><NoticeBoard /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/expenses" element={<Navigate to="/budgeting" />} />
           <Route path="/maintenance" element={<Navigate to="/budgeting" />} />

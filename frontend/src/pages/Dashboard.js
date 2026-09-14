@@ -22,12 +22,14 @@ import {
   Assignment,
   ArrowForward,
   Add,
+  Construction,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { useAuth } from '../contexts/AuthContext';
-import { ideasApi, alertsApi, marketplaceApi, budgetingApi } from '../services/api';
+import { ideasApi, alertsApi, marketplaceApi, budgetingApi, issuesApi } from '../services/api';
 import PageHeader from '../components/PageHeader';
+import NoticeTicker from '../components/NoticeTicker';
 
 // A dense, gap-filling bento grid — tiles declare how much space they need
 // and `gridAutoFlow: dense` packs the rest around them.
@@ -55,6 +57,7 @@ const Dashboard = () => {
   const { data: activeAlerts } = useQuery('active-alerts', () => alertsApi.getActive({ limit: 5 }));
   const { data: marketplaceItems } = useQuery('marketplace-items', () => marketplaceApi.getAll({ limit: 5 }));
   const { data: budgetData } = useQuery('budget-overview', () => budgetingApi.getAll({ limit: 100 }));
+  const { data: recentIssues } = useQuery('recent-issues', () => issuesApi.getAll({ limit: 5 }));
 
   const totalIncome = budgetData?.data?.filter(tx => tx.transaction_type === 'Income').reduce((sum, tx) => sum + tx.amount, 0) || 0;
   const totalExpenses = budgetData?.data?.filter(tx => tx.transaction_type === 'Expense').reduce((sum, tx) => sum + tx.amount, 0) || 0;
@@ -74,6 +77,13 @@ const Dashboard = () => {
       icon: <Warning />,
       colorKey: 'warning',
       action: () => navigate('/alerts'),
+    },
+    {
+      title: t('dashboard.reportIssue.title'),
+      description: t('dashboard.reportIssue.description'),
+      icon: <Construction />,
+      colorKey: 'error',
+      action: () => navigate('/issues'),
     },
     {
       title: t('dashboard.browseItems.title'),
@@ -105,6 +115,8 @@ const Dashboard = () => {
           title={t('dashboard.welcomeBack', { name: user?.full_name?.split(' ')[0] || user?.username })}
           subtitle={t('dashboard.happeningToday')}
         />
+
+        <NoticeTicker />
 
         {/* Bento: net balance hero tile + at-a-glance stats */}
         <BentoGrid sx={{ mb: { xs: 3, md: 4 } }}>
@@ -216,7 +228,7 @@ const Dashboard = () => {
 
         {/* Recent activity */}
         <BentoGrid>
-          <Card sx={{ gridColumn: { xs: 'span 12', md: 'span 6' }, p: 3 }}>
+          <Card sx={{ gridColumn: { xs: 'span 12', md: 'span 4' }, p: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
               <Typography variant="h6">💡 Latest Ideas</Typography>
               <IconButton size="small" color="success" onClick={() => navigate('/ideas')} sx={{ bgcolor: 'success.main', color: '#fff', '&:hover': { bgcolor: 'success.dark' } }}>
@@ -242,7 +254,7 @@ const Dashboard = () => {
             </Button>
           </Card>
 
-          <Card sx={{ gridColumn: { xs: 'span 12', md: 'span 6' }, p: 3 }}>
+          <Card sx={{ gridColumn: { xs: 'span 12', md: 'span 4' }, p: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
               <Typography variant="h6">🚨 Safety Updates</Typography>
               <IconButton size="small" onClick={() => navigate('/alerts')} sx={{ bgcolor: 'error.main', color: '#fff', '&:hover': { bgcolor: 'error.dark' } }}>
@@ -275,6 +287,47 @@ const Dashboard = () => {
             ))}
             <Button fullWidth variant="contained" color="error" endIcon={<ArrowForward />} onClick={() => navigate('/alerts')}>
               View All Alerts
+            </Button>
+          </Card>
+
+          <Card sx={{ gridColumn: { xs: 'span 12', md: 'span 4' }, p: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h6">{t('dashboard.recentIssues')}</Typography>
+              <IconButton size="small" color="secondary" onClick={() => navigate('/issues')} sx={{ bgcolor: 'secondary.main', color: '#fff', '&:hover': { bgcolor: 'secondary.dark' } }}>
+                <Add />
+              </IconButton>
+            </Box>
+            {recentIssues?.data?.length === 0 && (
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                No issues reported yet.
+              </Typography>
+            )}
+            {recentIssues?.data?.slice(0, 3).map((issue) => (
+              <Box key={issue.id} sx={{ mb: 3, pb: 2, borderBottom: 1, borderColor: 'divider' }}>
+                <Typography variant="body1" gutterBottom sx={{ fontWeight: 500 }}>
+                  {issue.title}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
+                  <Chip label={issue.category} size="small" />
+                  <Chip
+                    label={issue.status}
+                    size="small"
+                    color={
+                      issue.status === 'Resolved' || issue.status === 'Closed'
+                        ? 'success'
+                        : issue.status === 'In Progress'
+                        ? 'info'
+                        : 'warning'
+                    }
+                  />
+                </Box>
+                <Typography variant="caption" color="text.secondary">
+                  by {issue.author?.full_name || issue.author?.username || 'Unknown'}
+                </Typography>
+              </Box>
+            ))}
+            <Button fullWidth variant="contained" color="secondary" endIcon={<ArrowForward />} onClick={() => navigate('/issues')}>
+              {t('dashboard.viewAllIssues')}
             </Button>
           </Card>
         </BentoGrid>

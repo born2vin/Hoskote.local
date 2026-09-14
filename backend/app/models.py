@@ -179,6 +179,35 @@ class BudgetTransaction(Base):
     # Relationships
     created_by = relationship("User")
 
+class Notice(Base):
+    __tablename__ = "notices"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(200), nullable=False)
+    description = Column(Text, nullable=False)
+    expiry_date = Column(DateTime, nullable=False)
+    created_by_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    created_by = relationship("User")
+
+class Contact(Base):
+    __tablename__ = "contacts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(200), nullable=False)
+    phone = Column(String(20), nullable=False)
+    category = Column(String(50), nullable=False)
+    approval_status = Column(String(20), default="pending")
+    submitted_by_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    reviewed_at = Column(DateTime)
+
+    # Relationships
+    submitted_by = relationship("User")
+
 class PasswordResetToken(Base):
     __tablename__ = "password_reset_tokens"
 

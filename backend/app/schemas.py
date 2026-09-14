@@ -1,6 +1,6 @@
 import re
 from pydantic import BaseModel, EmailStr, validator, model_validator, field_validator
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional, List
 from enum import Enum
 
@@ -314,6 +314,76 @@ class BudgetTransaction(BudgetTransactionBase):
     created_by_id: int
     created_by: User
     created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+# Notice schemas
+class NoticeBase(BaseModel):
+    title: str
+    description: str
+    expiry_date: datetime
+
+    @field_validator('expiry_date', mode='before')
+    @classmethod
+    def parse_expiry_date(cls, value):
+        # A bare "YYYY-MM-DD" (date-input value) means "keep the notice up
+        # through the end of that day", not midnight at its start.
+        if isinstance(value, str) and len(value) == 10:
+            return datetime.strptime(value, '%Y-%m-%d') + timedelta(hours=23, minutes=59, seconds=59)
+        return value
+
+class NoticeCreate(NoticeBase):
+    pass
+
+class NoticeUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    expiry_date: Optional[datetime] = None
+
+    @field_validator('expiry_date', mode='before')
+    @classmethod
+    def parse_expiry_date(cls, value):
+        if isinstance(value, str) and len(value) == 10:
+            return datetime.strptime(value, '%Y-%m-%d') + timedelta(hours=23, minutes=59, seconds=59)
+        return value
+
+class Notice(NoticeBase):
+    id: int
+    created_by_id: int
+    created_by: User
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+# Contact schemas
+class ContactBase(BaseModel):
+    name: str
+    phone: str
+    category: str
+
+class ContactCreate(ContactBase):
+    pass
+
+class ContactStatusUpdate(BaseModel):
+    approval_status: str
+
+    @field_validator('approval_status')
+    @classmethod
+    def validate_status(cls, value):
+        if value not in ("approved", "rejected", "pending"):
+            raise ValueError('approval_status must be one of: pending, approved, rejected')
+        return value
+
+class Contact(ContactBase):
+    id: int
+    approval_status: str
+    submitted_by_id: int
+    submitted_by: User
+    created_at: datetime
+    reviewed_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True

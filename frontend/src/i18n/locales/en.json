@@ -43,6 +43,8 @@
     "issues": "Issues",
     "marketplace": "Marketplace",
     "budgeting": "Budgeting",
+    "contacts": "Contacts",
+    "noticeBoard": "Notice Board",
     "notifications": "Notifications",
     "profileSettings": "Profile Settings",
     "signedInAs": "Signed in as",
@@ -115,6 +117,10 @@
       "title": "Report Alert",
       "description": "Keep everyone safe and informed"
     },
+    "reportIssue": {
+      "title": "Report Issue",
+      "description": "Flag a shared maintenance problem"
+    },
     "browseItems": {
       "title": "Browse Items",
       "description": "Find what you need from neighbors"
@@ -126,8 +132,10 @@
     "getStarted": "Get Started",
     "latestIdeas": "💡 Latest Ideas",
     "safetyUpdates": "🚨 Safety Updates",
+    "recentIssues": "🛠️ Recent Issues",
     "viewAllIdeas": "View All Ideas",
     "viewAllAlerts": "View All Alerts",
+    "viewAllIssues": "View All Issues",
     "totalIncome": "Total Income",
     "totalExpenses": "Total Expenses",
     "netBalance": "Net Balance"

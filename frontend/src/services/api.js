@@ -70,3 +70,20 @@ export const budgetingApi = {
   update: (id, data) => api.put(`/api/budgeting/${id}`, data),
   delete: (id) => api.delete(`/api/budgeting/${id}`),
 };
+
+// Notices API
+export const noticesApi = {
+  getActive: (params = {}) => api.get('/api/notices/active', { params }),
+  getAll: (params = {}) => api.get('/api/notices/', { params }),
+  create: (data) => api.post('/api/notices/', data),
+  update: (id, data) => api.put(`/api/notices/${id}`, data),
+  delete: (id) => api.delete(`/api/notices/${id}`),
+};
+
+// Contacts API
+export const contactsApi = {
+  getApproved: (params = {}) => api.get('/api/contacts/', { params }),
+  getPending: (params = {}) => api.get('/api/contacts/pending', { params }),
+  create: (data) => api.post('/api/contacts/', data),
+  updateStatus: (id, data) => api.patch(`/api/contacts/${id}/status`, data),
+};
